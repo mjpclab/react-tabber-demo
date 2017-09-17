@@ -21470,7 +21470,11 @@ module.exports = ReactMount.renderSubtreeIntoContainer;
 /* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(173);
+"use strict";
+
+var ReactTabber = __webpack_require__(173);
+module.exports = ReactTabber;
+
 
 /***/ }),
 /* 173 */
@@ -21675,6 +21679,8 @@ exports.push([module.i, ".tab-container .page-container {\n\tborder-color: #ccc;
 
 "use strict";
 
+/// <reference path='main.d.ts' />
+/// <reference path='private.d.ts' />
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -21687,50 +21693,88 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var React = __webpack_require__(45);
 var PropTypes = __webpack_require__(180);
+var RE_WHITESPACES = /\s+/;
+function normalizeTriggerEvents(events) {
+    if (events) {
+        if (Array.isArray(events)) {
+            return events;
+        }
+        else {
+            return String(events).split(RE_WHITESPACES);
+        }
+    }
+}
+function fillEventHandler(props, events, handler) {
+    if (events && events.length) {
+        events.forEach(function (event) {
+            props[event] = handler;
+        });
+    }
+}
 var ReactTabber = /** @class */ (function (_super) {
     __extends(ReactTabber, _super);
     function ReactTabber(props) {
         var _this = _super.call(this, props) || this;
+        _this.currentIndex = -1;
         _this.state = {
-            activeIndex: -1
+            targetIndex: _this.getValidIndex(props.activeIndex)
         };
         return _this;
     }
     ReactTabber.prototype.componentWillMount = function () {
-        this.switchTo(this.props.activeIndex);
+        var props = this.props;
+        this.triggerEvents = normalizeTriggerEvents(props.triggerEvents);
+        this.delayTriggerEvents = normalizeTriggerEvents(props.delayTriggerEvents);
+        this.delayTriggerCancelEvents = normalizeTriggerEvents(props.delayTriggerCancelEvents);
     };
     ReactTabber.prototype.componentWillUnmount = function () {
         clearTimeout(this.delayTimeout);
     };
+    ReactTabber.prototype.getValidIndex = function (index) {
+        if (index === '' || !isFinite(index) || isNaN(index)) {
+            return -1;
+        }
+        var intIndex = parseInt(index);
+        return intIndex < 0 ? 0 : index;
+    };
     ReactTabber.prototype.getLabelContainer = function (positionClassName) {
         var _this = this;
         var props = this.props;
-        var state = this.state;
-        return React.createElement("div", { className: props.labelContainerClassName + ' ' + positionClassName }, this.props.tabs.map(function (tab, index) {
-            var className = props.labelItemClassName + ' ' + (index === state.activeIndex ? props.labelItemActiveClassName : props.labelItemInactiveClassName);
+        var labelContainer = React.createElement("div", { className: props.labelContainerClassName + ' ' + positionClassName }, this.props.tabs.map(function (tab, index) {
+            var className = props.labelItemClassName + ' ' + (index === _this.currentIndex ? props.labelItemActiveClassName : props.labelItemInactiveClassName);
             var doSwitch = function () {
+                clearTimeout(_this.delayTimeout);
                 _this.switchTo(index);
             };
             var localDelayTimeout;
-            var delayDoSwitch = (props.hoverSwitchDelay) <= 0 ?
+            var delayDoSwitch = (props.delayTriggerLatency) <= 0 ?
                 doSwitch :
                 function () {
                     clearTimeout(_this.delayTimeout);
-                    localDelayTimeout = _this.delayTimeout = setTimeout(doSwitch, props.hoverSwitchDelay);
+                    localDelayTimeout = _this.delayTimeout = setTimeout(doSwitch, props.delayTriggerLatency);
                 };
             var cancelDelayDoSwitch = function () {
                 if (localDelayTimeout === _this.delayTimeout) {
                     clearTimeout(localDelayTimeout);
                 }
             };
-            return React.createElement("label", { key: tab.key ? 'key-' + tab.key : 'index-' + index, className: className, onClick: props.clickSwitch ? doSwitch : undefined, onMouseEnter: props.hoverSwitch ? delayDoSwitch : undefined, onMouseLeave: props.leaveCancelSwitch ? cancelDelayDoSwitch : undefined }, tab.label);
+            var labelItemProps = {};
+            if (_this.delayTriggerEvents && _this.delayTriggerEvents.length) {
+                fillEventHandler(labelItemProps, _this.delayTriggerCancelEvents, cancelDelayDoSwitch);
+                fillEventHandler(labelItemProps, _this.delayTriggerEvents, delayDoSwitch);
+            }
+            fillEventHandler(labelItemProps, _this.triggerEvents, doSwitch);
+            labelItemProps.key = tab.key ? 'key-' + tab.key : 'index-' + index;
+            labelItemProps.className = className;
+            return React.createElement('label', labelItemProps, tab.label);
         }));
+        return labelContainer;
     };
     ReactTabber.prototype.getPageContainer = function () {
+        var _this = this;
         var props = this.props;
-        var state = this.state;
         return React.createElement("div", { className: props.pageContainerClassName }, this.props.tabs.map(function (tab, index) {
-            var className = props.pageItemClassName + ' ' + (index === state.activeIndex ? props.pageItemActiveClassName : props.pageItemInactiveClassName);
+            var className = props.pageItemClassName + ' ' + (index === _this.currentIndex ? props.pageItemActiveClassName : props.pageItemInactiveClassName);
             return React.createElement("div", { key: tab.key ? 'key-' + tab.key : 'index-' + index, className: className }, tab.page);
         }));
     };
@@ -21738,43 +21782,22 @@ var ReactTabber = /** @class */ (function (_super) {
         var props = this.props;
         return React.createElement("div", { className: props.tabContainerClassName },
             props.showTopLabelContainer ? this.getLabelContainer(props.topLabelContainerClassName) : null,
-            " ",
             this.getPageContainer(),
-            " ",
             props.showBottomLabelContainer ? this.getLabelContainer(props.bottomLabelContainerClassName) : null);
     };
     ReactTabber.prototype.switchTo = function (index) {
-        if (!isFinite(index) || isNaN(index)) {
-            return;
-        }
-        var props = this.props;
-        var onSwitch = props.onSwitch;
-        var oldIndex;
-        var newIndex;
-        if (index < 0) {
-            newIndex = 0;
-        }
-        else if (index >= props.tabs.length) {
-            newIndex = props.tabs.length - 1;
-        }
-        else {
-            newIndex = parseInt(index);
-        }
-        //update
-        this.setState(function (prevState) {
-            oldIndex = prevState.activeIndex;
-            if (oldIndex !== newIndex) {
-                return {
-                    activeIndex: newIndex
-                };
-            }
-        }, onSwitch && function () {
-            if (oldIndex !== newIndex) {
-                onSwitch(oldIndex, newIndex);
-            }
+        this.setState({
+            targetIndex: this.getValidIndex(index)
         });
     };
     ReactTabber.prototype.render = function () {
+        var props = this.props;
+        var state = this.state;
+        var oldIndex = this.currentIndex;
+        var newIndex = this.currentIndex = state.targetIndex >= props.tabs.length ? props.tabs.length - 1 : state.targetIndex;
+        if (oldIndex !== newIndex && props.onSwitch) {
+            props.onSwitch(oldIndex, newIndex);
+        }
         return this.props.tabs ? this.getTabContainer() : null;
     };
     ReactTabber.propTypes = {
@@ -21783,11 +21806,11 @@ var ReactTabber = /** @class */ (function (_super) {
             page: PropTypes.node.isRequired,
             key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
         })).isRequired,
+        triggerEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+        delayTriggerEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+        delayTriggerCancelEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+        delayTriggerLatency: PropTypes.number,
         activeIndex: PropTypes.number,
-        clickSwitch: PropTypes.bool,
-        hoverSwitch: PropTypes.bool,
-        hoverSwitchDelay: PropTypes.number,
-        leaveCancelSwitch: PropTypes.bool,
         onSwitch: PropTypes.func,
         tabContainerClassName: PropTypes.string,
         labelContainerClassName: PropTypes.string,
@@ -21804,11 +21827,10 @@ var ReactTabber = /** @class */ (function (_super) {
         pageItemInactiveClassName: PropTypes.string
     };
     ReactTabber.defaultProps = {
+        tabs: [],
         activeIndex: 0,
-        clickSwitch: true,
-        hoverSwitch: false,
-        hoverSwitchDelay: 0,
-        leaveCancelSwitch: true,
+        triggerEvents: ['onClick'],
+        delayTriggerLatency: 200,
         tabContainerClassName: 'tab-container',
         labelContainerClassName: 'label-container',
         showTopLabelContainer: true,
