@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = [{
-	entry: './src/js/main.js',
+	entry: './src/js/main.jsx',
 	output: {
 		libraryTarget: 'umd',
 		path: path.resolve(__dirname, 'dist'),
@@ -10,19 +10,18 @@ module.exports = [{
 	},
 	module: {
 		rules: [
-			{test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'}
+			{test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader'}
 		]
 	},
 	plugins: [
-		new webpack.DefinePlugin({
+		/*new webpack.DefinePlugin({
 			'process.env': {
 				'NODE_ENV': JSON.stringify('production')
 			}
-		})
-	],
-	devtool: 'source-map'
+		})*/
+	]
 }, {
-	entry: './src/js/with-css.js',
+	entry: './src/js/with-css.jsx',
 	output: {
 		libraryTarget: 'umd',
 		path: path.resolve(__dirname, 'dist'),
@@ -30,16 +29,15 @@ module.exports = [{
 	},
 	module: {
 		rules: [
-			{test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'},
+			{test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader'},
 			{test: /\.css$/, use: ['style-loader', 'css-loader']}
 		]
 	},
 	plugins: [
-		new webpack.DefinePlugin({
+		/*new webpack.DefinePlugin({
 			'process.env': {
 				'NODE_ENV': JSON.stringify('production')
 			}
-		})
-	],
-	devtool: 'source-map'
+		})*/
+	]
 }];
