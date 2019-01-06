@@ -1,1595 +1,669 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("react"));
-	else if(typeof define === 'function' && define.amd)
-		define(["react"], factory);
-	else if(typeof exports === 'object')
-		exports["react-tabber"] = factory(require("react"));
-	else
-		root["ReactTabber"] = factory(root["React"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('react'), require('prop-types')) :
+    typeof define === 'function' && define.amd ? define(['react', 'prop-types'], factory) :
+    (global = global || self, global.ReactTabber = factory(global.React, global.PropTypes));
+}(this, function (React, PropTypes) { 'use strict';
 
-// shim for using process in browser
-var process = module.exports = {};
+    var React__default = 'default' in React ? React['default'] : React;
+    PropTypes = PropTypes && PropTypes.hasOwnProperty('default') ? PropTypes['default'] : PropTypes;
 
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
+    var __assign = (undefined && undefined.__assign) || function () {
+        __assign = Object.assign || function(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                    t[p] = s[p];
             }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-function makeEmptyFunction(arg) {
-  return function () {
-    return arg;
-  };
-}
-
-/**
- * This function accepts and discards inputs; it has no side effects. This is
- * primarily useful idiomatically for overridable function endpoints which
- * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
- */
-var emptyFunction = function emptyFunction() {};
-
-emptyFunction.thatReturns = makeEmptyFunction;
-emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
-emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
-emptyFunction.thatReturnsNull = makeEmptyFunction(null);
-emptyFunction.thatReturnsThis = function () {
-  return this;
-};
-emptyFunction.thatReturnsArgument = function (arg) {
-  return arg;
-};
-
-module.exports = emptyFunction;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
-var validateFormat = function validateFormat(format) {};
-
-if (process.env.NODE_ENV !== 'production') {
-  validateFormat = function validateFormat(format) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
-    }
-  };
-}
-
-function invariant(condition, format, a, b, c, d, e, f) {
-  validateFormat(format);
-
-  if (!condition) {
-    var error;
-    if (format === undefined) {
-      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-    } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(format.replace(/%s/g, function () {
-        return args[argIndex++];
-      }));
-      error.name = 'Invariant Violation';
-    }
-
-    error.framesToPop = 1; // we don't care about invariant's own frame
-    throw error;
-  }
-}
-
-module.exports = invariant;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
-
-module.exports = ReactPropTypesSecret;
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-var emptyFunction = __webpack_require__(2);
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = emptyFunction;
-
-if (process.env.NODE_ENV !== 'production') {
-  var printWarning = function printWarning(format) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var argIndex = 0;
-    var message = 'Warning: ' + format.replace(/%s/g, function () {
-      return args[argIndex++];
-    });
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
-
-  warning = function warning(condition, format) {
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.indexOf('Failed Composite propType: ') === 0) {
-      return; // Ignore CompositeComponent proptype check.
-    }
-
-    if (!condition) {
-      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-        args[_key2 - 2] = arguments[_key2];
-      }
-
-      printWarning.apply(undefined, [format].concat(args));
-    }
-  };
-}
-
-module.exports = warning;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ReactTabber; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ReactTabber", function() { return ReactTabber; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__react_tabber_label__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__react_tabber_page__ = __webpack_require__(13);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ReactTabberLabel", function() { return __WEBPACK_IMPORTED_MODULE_2__react_tabber_label__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ReactTabberPage", function() { return __WEBPACK_IMPORTED_MODULE_3__react_tabber_page__["a"]; });
-/// <reference path='public.d.ts' />
-/// <reference path='private.d.ts' />
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-var RE_WHITESPACES = /\s+/;
-function normalizeTriggerEvents(events) {
-    if (events) {
-        if (Array.isArray(events)) {
-            return events;
-        }
-        else {
-            return String(events).split(RE_WHITESPACES);
-        }
-    }
-}
-function fillEventHandler(props, events, handler) {
-    if (events && events.length) {
-        events.forEach(function (event) {
-            props[event] = handler;
-        });
-    }
-}
-var ReactTabber = /** @class */ (function (_super) {
-    __extends(ReactTabber, _super);
-    function ReactTabber(props) {
-        var _this = _super.call(this, props) || this;
-        _this.currentIndex = -1;
-        _this.state = {
-            targetIndex: _this.getValidIndex(props.activeIndex)
+            return t;
         };
-        return _this;
-    }
-    ReactTabber.prototype.componentWillMount = function () {
-        var props = this.props;
-        this.triggerEvents = normalizeTriggerEvents(props.triggerEvents);
-        this.delayTriggerEvents = normalizeTriggerEvents(props.delayTriggerEvents);
-        this.delayTriggerCancelEvents = normalizeTriggerEvents(props.delayTriggerCancelEvents);
+        return __assign.apply(this, arguments);
     };
-    ReactTabber.prototype.componentWillUnmount = function () {
-        clearTimeout(this.delayTimeout);
-    };
-    ReactTabber.prototype.getValidIndex = function (index) {
-        if (index === '' || !isFinite(index) || isNaN(index)) {
-            return -1;
-        }
-        var intIndex = parseInt(index);
-        return intIndex < 0 ? 0 : index;
-    };
-    ReactTabber.prototype._getLabelContainer = function (tabs, positionClassName) {
-        var _this = this;
-        var props = this.props;
-        var labelContainer = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: props.labelContainerClassName + ' ' + positionClassName }, tabs.map(function (tab, index) {
-            var className = props.labelItemClassName + ' ' + (index === _this.currentIndex ? props.labelItemActiveClassName : props.labelItemInactiveClassName);
-            var doSwitch = function () {
-                clearTimeout(_this.delayTimeout);
-                _this.switchTo(index);
-            };
-            var localDelayTimeout;
-            var delayDoSwitch = (props.delayTriggerLatency) <= 0 ?
-                doSwitch :
-                function () {
-                    clearTimeout(_this.delayTimeout);
-                    localDelayTimeout = _this.delayTimeout = setTimeout(doSwitch, props.delayTriggerLatency);
-                };
-            var cancelDelayDoSwitch = function () {
-                if (localDelayTimeout === _this.delayTimeout) {
-                    clearTimeout(localDelayTimeout);
-                }
-            };
-            var labelItemProps = {};
-            if (_this.delayTriggerEvents && _this.delayTriggerEvents.length) {
-                fillEventHandler(labelItemProps, _this.delayTriggerCancelEvents, cancelDelayDoSwitch);
-                fillEventHandler(labelItemProps, _this.delayTriggerEvents, delayDoSwitch);
-            }
-            fillEventHandler(labelItemProps, _this.triggerEvents, doSwitch);
-            labelItemProps.key = tab.key ? 'key-' + tab.key : 'index-' + index;
-            labelItemProps.className = className;
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]('div', labelItemProps, tab.label);
-        }));
-        return labelContainer;
-    };
-    ReactTabber.prototype.getHeaderLabelContainer = function (tabs) {
-        return this._getLabelContainer(tabs, this.props.headerLabelContainerClassName);
-    };
-    ReactTabber.prototype.getFooterLabelContainer = function (tabs) {
-        return this._getLabelContainer(tabs, this.props.footerLabelContainerClassName);
-    };
-    ReactTabber.prototype.getPageContainer = function (tabs) {
-        var _this = this;
-        var props = this.props;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: props.pageContainerClassName }, tabs.map(function (tab, index) {
-            var className = props.pageItemClassName + ' ' + (index === _this.currentIndex ? props.pageItemActiveClassName : props.pageItemInactiveClassName);
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { key: tab.key ? 'key-' + tab.key : 'index-' + index, className: className }, tab.page);
-        }));
-    };
-    ReactTabber.prototype.getTabContainer = function (tabs) {
-        var props = this.props;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: props.tabContainerClassName },
-            props.showHeaderLabelContainer ? this.getHeaderLabelContainer(tabs) : null,
-            this.getPageContainer(tabs),
-            props.showFooterLabelContainer ? this.getFooterLabelContainer(tabs) : null);
-    };
-    ReactTabber.prototype.switchTo = function (index) {
-        this.setState({
-            targetIndex: this.getValidIndex(index)
-        });
-    };
-    ReactTabber.prototype.getTabs = function () {
-        var props = this.props;
-        var tabs = [];
-        //props.tabs
-        if (props.tabs.length) {
-            tabs.push.apply(tabs, props.tabs);
-        }
-        //props.children
-        if (props.children) {
-            var currentLabel_1 = [];
-            var currentPage_1 = [];
-            var key_1;
-            __WEBPACK_IMPORTED_MODULE_0_react__["Children"].forEach(props.children, function (item) {
-                var element = item;
-                if (element.type && element.type === __WEBPACK_IMPORTED_MODULE_2__react_tabber_label__["a" /* default */]) {
-                    if (currentLabel_1.length) {
-                        tabs.push({
-                            label: currentLabel_1.length === 1 ? currentLabel_1[0] : currentLabel_1,
-                            page: currentPage_1.length === 1 ? currentPage_1[0] : currentPage_1,
-                            key: key_1
-                        });
-                    }
-                    currentLabel_1 = [];
-                    if (Array.isArray(element.props.children)) {
-                        currentLabel_1.push.apply(currentLabel_1, element.props.children);
-                    }
-                    else {
-                        currentLabel_1.push(element.props.children);
-                    }
-                    currentPage_1 = [];
-                    key_1 = element.key ? 'key-' + element.key : 'index-' + tabs.length;
-                }
-                else {
-                    if (!currentLabel_1.length) {
-                        currentLabel_1.push('');
-                    }
-                    if (element.type && element.type === __WEBPACK_IMPORTED_MODULE_3__react_tabber_page__["a" /* default */]) {
-                        if (Array.isArray(element.props.children)) {
-                            currentPage_1.push.apply(currentPage_1, element.props.children);
-                        }
-                        else {
-                            currentPage_1.push(element.props.children);
-                        }
-                    }
-                    else if (element.type) {
-                        currentPage_1.push(element);
-                    }
-                }
-            });
-            if (currentLabel_1.length) {
-                tabs.push({
-                    label: currentLabel_1.length === 1 ? currentLabel_1[0] : currentLabel_1,
-                    page: currentPage_1.length === 1 ? currentPage_1[0] : currentPage_1,
-                    key: key_1
-                });
-            }
-        }
-        return tabs;
-    };
-    ReactTabber.prototype.render = function () {
-        var self = this;
-        var props = self.props;
-        var state = self.state;
-        var tabs = self.getTabs();
-        if (!tabs) {
-            return null;
-        }
-        var oldIndex = self.currentIndex;
-        var newIndex = self.currentIndex = state.targetIndex >= tabs.length ? tabs.length - 1 : state.targetIndex;
-        if (oldIndex !== newIndex && props.onSwitch) {
-            props.onSwitch(oldIndex, newIndex);
-        }
-        return self.getTabContainer(tabs);
-    };
-    ReactTabber.Label = __WEBPACK_IMPORTED_MODULE_2__react_tabber_label__["a" /* default */];
-    ReactTabber.Page = __WEBPACK_IMPORTED_MODULE_3__react_tabber_page__["a" /* default */];
-    ReactTabber.propTypes = {
-        tabs: __WEBPACK_IMPORTED_MODULE_1_prop_types__["arrayOf"](__WEBPACK_IMPORTED_MODULE_1_prop_types__["shape"]({
-            label: __WEBPACK_IMPORTED_MODULE_1_prop_types__["node"].isRequired,
-            page: __WEBPACK_IMPORTED_MODULE_1_prop_types__["node"].isRequired,
-            key: __WEBPACK_IMPORTED_MODULE_1_prop_types__["oneOfType"]([__WEBPACK_IMPORTED_MODULE_1_prop_types__["string"], __WEBPACK_IMPORTED_MODULE_1_prop_types__["number"]])
+    var sharedPropTypes = {
+        tabs: PropTypes.arrayOf(PropTypes.shape({
+            label: PropTypes.node.isRequired,
+            panel: PropTypes.node.isRequired,
+            key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
         })),
-        triggerEvents: __WEBPACK_IMPORTED_MODULE_1_prop_types__["oneOfType"]([__WEBPACK_IMPORTED_MODULE_1_prop_types__["string"], __WEBPACK_IMPORTED_MODULE_1_prop_types__["arrayOf"](__WEBPACK_IMPORTED_MODULE_1_prop_types__["string"])]),
-        delayTriggerEvents: __WEBPACK_IMPORTED_MODULE_1_prop_types__["oneOfType"]([__WEBPACK_IMPORTED_MODULE_1_prop_types__["string"], __WEBPACK_IMPORTED_MODULE_1_prop_types__["arrayOf"](__WEBPACK_IMPORTED_MODULE_1_prop_types__["string"])]),
-        delayTriggerCancelEvents: __WEBPACK_IMPORTED_MODULE_1_prop_types__["oneOfType"]([__WEBPACK_IMPORTED_MODULE_1_prop_types__["string"], __WEBPACK_IMPORTED_MODULE_1_prop_types__["arrayOf"](__WEBPACK_IMPORTED_MODULE_1_prop_types__["string"])]),
-        delayTriggerLatency: __WEBPACK_IMPORTED_MODULE_1_prop_types__["number"],
-        activeIndex: __WEBPACK_IMPORTED_MODULE_1_prop_types__["number"],
-        onSwitch: __WEBPACK_IMPORTED_MODULE_1_prop_types__["func"],
-        tabContainerClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"],
-        labelContainerClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"],
-        showHeaderLabelContainer: __WEBPACK_IMPORTED_MODULE_1_prop_types__["bool"],
-        showFooterLabelContainer: __WEBPACK_IMPORTED_MODULE_1_prop_types__["bool"],
-        headerLabelContainerClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"],
-        footerLabelContainerClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"],
-        labelItemClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"],
-        labelItemActiveClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"],
-        labelItemInactiveClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"],
-        pageContainerClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"],
-        pageItemClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"],
-        pageItemActiveClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"],
-        pageItemInactiveClassName: __WEBPACK_IMPORTED_MODULE_1_prop_types__["string"]
+        mode: PropTypes.string,
+        keyboardSwitch: PropTypes.bool,
+        delayTriggerLatency: PropTypes.number,
+        activePosition: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        onSwitching: PropTypes.func,
+        onSwitched: PropTypes.func,
+        tabContainerClassName: PropTypes.string,
+        labelContainerClassName: PropTypes.string,
+        showHeaderLabelContainer: PropTypes.bool,
+        showFooterLabelContainer: PropTypes.bool,
+        labelItemClassName: PropTypes.string,
+        panelContainerClassName: PropTypes.string,
+        panelItemClassName: PropTypes.string,
     };
-    ReactTabber.defaultProps = {
+    var propTypes = __assign({}, sharedPropTypes, { triggerEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]), delayTriggerEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]), delayTriggerCancelEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]) });
+    var tabPropTypes = __assign({}, sharedPropTypes, { triggerEvents: PropTypes.arrayOf(PropTypes.string), delayTriggerEvents: PropTypes.arrayOf(PropTypes.string), delayTriggerCancelEvents: PropTypes.arrayOf(PropTypes.string) });
+
+    var defaultProps = {
         tabs: [],
-        activeIndex: 0,
+        mode: "horizontal" /* Horizontal */,
+        keyboardSwitch: true,
         triggerEvents: ['onClick'],
         delayTriggerLatency: 200,
         tabContainerClassName: 'tab-container',
         labelContainerClassName: 'label-container',
         showHeaderLabelContainer: true,
         showFooterLabelContainer: false,
-        headerLabelContainerClassName: 'header-container',
-        footerLabelContainerClassName: 'footer-container',
         labelItemClassName: 'label-item',
-        labelItemActiveClassName: 'label-active',
-        labelItemInactiveClassName: 'label-inactive',
-        pageContainerClassName: 'page-container',
-        pageItemClassName: 'page-item',
-        pageItemActiveClassName: 'page-active',
-        pageItemInactiveClassName: 'page-inactive'
+        panelContainerClassName: 'panel-container',
+        panelItemClassName: 'panel-item',
     };
-    return ReactTabber;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
 
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-if (process.env.NODE_ENV !== 'production') {
-  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
-    Symbol.for &&
-    Symbol.for('react.element')) ||
-    0xeac7;
-
-  var isValidElement = function(object) {
-    return typeof object === 'object' &&
-      object !== null &&
-      object.$$typeof === REACT_ELEMENT_TYPE;
-  };
-
-  // By explicitly using `prop-types` you are opting into new development behavior.
-  // http://fb.me/prop-types-in-prod
-  var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(8)(isValidElement, throwOnDirectAccess);
-} else {
-  // By explicitly using `prop-types` you are opting into new production behavior.
-  // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(11)();
-}
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-var emptyFunction = __webpack_require__(2);
-var invariant = __webpack_require__(3);
-var warning = __webpack_require__(5);
-var assign = __webpack_require__(9);
-
-var ReactPropTypesSecret = __webpack_require__(4);
-var checkPropTypes = __webpack_require__(10);
-
-module.exports = function(isValidElement, throwOnDirectAccess) {
-  /* global Symbol */
-  var ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
-  var FAUX_ITERATOR_SYMBOL = '@@iterator'; // Before Symbol spec.
-
-  /**
-   * Returns the iterator method function contained on the iterable object.
-   *
-   * Be sure to invoke the function with the iterable as context:
-   *
-   *     var iteratorFn = getIteratorFn(myIterable);
-   *     if (iteratorFn) {
-   *       var iterator = iteratorFn.call(myIterable);
-   *       ...
-   *     }
-   *
-   * @param {?object} maybeIterable
-   * @return {?function}
-   */
-  function getIteratorFn(maybeIterable) {
-    var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
-    if (typeof iteratorFn === 'function') {
-      return iteratorFn;
-    }
-  }
-
-  /**
-   * Collection of methods that allow declaration and validation of props that are
-   * supplied to React components. Example usage:
-   *
-   *   var Props = require('ReactPropTypes');
-   *   var MyArticle = React.createClass({
-   *     propTypes: {
-   *       // An optional string prop named "description".
-   *       description: Props.string,
-   *
-   *       // A required enum prop named "category".
-   *       category: Props.oneOf(['News','Photos']).isRequired,
-   *
-   *       // A prop named "dialog" that requires an instance of Dialog.
-   *       dialog: Props.instanceOf(Dialog).isRequired
-   *     },
-   *     render: function() { ... }
-   *   });
-   *
-   * A more formal specification of how these methods are used:
-   *
-   *   type := array|bool|func|object|number|string|oneOf([...])|instanceOf(...)
-   *   decl := ReactPropTypes.{type}(.isRequired)?
-   *
-   * Each and every declaration produces a function with the same signature. This
-   * allows the creation of custom validation functions. For example:
-   *
-   *  var MyLink = React.createClass({
-   *    propTypes: {
-   *      // An optional string or URI prop named "href".
-   *      href: function(props, propName, componentName) {
-   *        var propValue = props[propName];
-   *        if (propValue != null && typeof propValue !== 'string' &&
-   *            !(propValue instanceof URI)) {
-   *          return new Error(
-   *            'Expected a string or an URI for ' + propName + ' in ' +
-   *            componentName
-   *          );
-   *        }
-   *      }
-   *    },
-   *    render: function() {...}
-   *  });
-   *
-   * @internal
-   */
-
-  var ANONYMOUS = '<<anonymous>>';
-
-  // Important!
-  // Keep this list in sync with production version in `./factoryWithThrowingShims.js`.
-  var ReactPropTypes = {
-    array: createPrimitiveTypeChecker('array'),
-    bool: createPrimitiveTypeChecker('boolean'),
-    func: createPrimitiveTypeChecker('function'),
-    number: createPrimitiveTypeChecker('number'),
-    object: createPrimitiveTypeChecker('object'),
-    string: createPrimitiveTypeChecker('string'),
-    symbol: createPrimitiveTypeChecker('symbol'),
-
-    any: createAnyTypeChecker(),
-    arrayOf: createArrayOfTypeChecker,
-    element: createElementTypeChecker(),
-    instanceOf: createInstanceTypeChecker,
-    node: createNodeChecker(),
-    objectOf: createObjectOfTypeChecker,
-    oneOf: createEnumTypeChecker,
-    oneOfType: createUnionTypeChecker,
-    shape: createShapeTypeChecker,
-    exact: createStrictShapeTypeChecker,
-  };
-
-  /**
-   * inlined Object.is polyfill to avoid requiring consumers ship their own
-   * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
-   */
-  /*eslint-disable no-self-compare*/
-  function is(x, y) {
-    // SameValue algorithm
-    if (x === y) {
-      // Steps 1-5, 7-10
-      // Steps 6.b-6.e: +0 != -0
-      return x !== 0 || 1 / x === 1 / y;
-    } else {
-      // Step 6.a: NaN == NaN
-      return x !== x && y !== y;
-    }
-  }
-  /*eslint-enable no-self-compare*/
-
-  /**
-   * We use an Error-like object for backward compatibility as people may call
-   * PropTypes directly and inspect their output. However, we don't use real
-   * Errors anymore. We don't inspect their stack anyway, and creating them
-   * is prohibitively expensive if they are created too often, such as what
-   * happens in oneOfType() for any type before the one that matched.
-   */
-  function PropTypeError(message) {
-    this.message = message;
-    this.stack = '';
-  }
-  // Make `instanceof Error` still work for returned errors.
-  PropTypeError.prototype = Error.prototype;
-
-  function createChainableTypeChecker(validate) {
-    if (process.env.NODE_ENV !== 'production') {
-      var manualPropTypeCallCache = {};
-      var manualPropTypeWarningCount = 0;
-    }
-    function checkType(isRequired, props, propName, componentName, location, propFullName, secret) {
-      componentName = componentName || ANONYMOUS;
-      propFullName = propFullName || propName;
-
-      if (secret !== ReactPropTypesSecret) {
-        if (throwOnDirectAccess) {
-          // New behavior only for users of `prop-types` package
-          invariant(
-            false,
-            'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
-            'Use `PropTypes.checkPropTypes()` to call them. ' +
-            'Read more at http://fb.me/use-check-prop-types'
-          );
-        } else if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined') {
-          // Old behavior for people using React.PropTypes
-          var cacheKey = componentName + ':' + propName;
-          if (
-            !manualPropTypeCallCache[cacheKey] &&
-            // Avoid spamming the console because they are often not actionable except for lib authors
-            manualPropTypeWarningCount < 3
-          ) {
-            warning(
-              false,
-              'You are manually calling a React.PropTypes validation ' +
-              'function for the `%s` prop on `%s`. This is deprecated ' +
-              'and will throw in the standalone `prop-types` package. ' +
-              'You may be seeing this warning due to a third-party PropTypes ' +
-              'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.',
-              propFullName,
-              componentName
-            );
-            manualPropTypeCallCache[cacheKey] = true;
-            manualPropTypeWarningCount++;
-          }
-        }
-      }
-      if (props[propName] == null) {
-        if (isRequired) {
-          if (props[propName] === null) {
-            return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required ' + ('in `' + componentName + '`, but its value is `null`.'));
-          }
-          return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required in ' + ('`' + componentName + '`, but its value is `undefined`.'));
-        }
-        return null;
-      } else {
-        return validate(props, propName, componentName, location, propFullName);
-      }
-    }
-
-    var chainedCheckType = checkType.bind(null, false);
-    chainedCheckType.isRequired = checkType.bind(null, true);
-
-    return chainedCheckType;
-  }
-
-  function createPrimitiveTypeChecker(expectedType) {
-    function validate(props, propName, componentName, location, propFullName, secret) {
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== expectedType) {
-        // `propValue` being instance of, say, date/regexp, pass the 'object'
-        // check, but we can offer a more precise error message here rather than
-        // 'of type `object`'.
-        var preciseType = getPreciseType(propValue);
-
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + preciseType + '` supplied to `' + componentName + '`, expected ') + ('`' + expectedType + '`.'));
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createAnyTypeChecker() {
-    return createChainableTypeChecker(emptyFunction.thatReturnsNull);
-  }
-
-  function createArrayOfTypeChecker(typeChecker) {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (typeof typeChecker !== 'function') {
-        return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside arrayOf.');
-      }
-      var propValue = props[propName];
-      if (!Array.isArray(propValue)) {
-        var propType = getPropType(propValue);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an array.'));
-      }
-      for (var i = 0; i < propValue.length; i++) {
-        var error = typeChecker(propValue, i, componentName, location, propFullName + '[' + i + ']', ReactPropTypesSecret);
-        if (error instanceof Error) {
-          return error;
-        }
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createElementTypeChecker() {
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      if (!isValidElement(propValue)) {
-        var propType = getPropType(propValue);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement.'));
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createInstanceTypeChecker(expectedClass) {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (!(props[propName] instanceof expectedClass)) {
-        var expectedClassName = expectedClass.name || ANONYMOUS;
-        var actualClassName = getClassName(props[propName]);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + actualClassName + '` supplied to `' + componentName + '`, expected ') + ('instance of `' + expectedClassName + '`.'));
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createEnumTypeChecker(expectedValues) {
-    if (!Array.isArray(expectedValues)) {
-      process.env.NODE_ENV !== 'production' ? warning(false, 'Invalid argument supplied to oneOf, expected an instance of array.') : void 0;
-      return emptyFunction.thatReturnsNull;
-    }
-
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      for (var i = 0; i < expectedValues.length; i++) {
-        if (is(propValue, expectedValues[i])) {
-          return null;
-        }
-      }
-
-      var valuesString = JSON.stringify(expectedValues);
-      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of value `' + propValue + '` ' + ('supplied to `' + componentName + '`, expected one of ' + valuesString + '.'));
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createObjectOfTypeChecker(typeChecker) {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (typeof typeChecker !== 'function') {
-        return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside objectOf.');
-      }
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== 'object') {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an object.'));
-      }
-      for (var key in propValue) {
-        if (propValue.hasOwnProperty(key)) {
-          var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-          if (error instanceof Error) {
-            return error;
-          }
-        }
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createUnionTypeChecker(arrayOfTypeCheckers) {
-    if (!Array.isArray(arrayOfTypeCheckers)) {
-      process.env.NODE_ENV !== 'production' ? warning(false, 'Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
-      return emptyFunction.thatReturnsNull;
-    }
-
-    for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
-      var checker = arrayOfTypeCheckers[i];
-      if (typeof checker !== 'function') {
-        warning(
-          false,
-          'Invalid argument supplied to oneOfType. Expected an array of check functions, but ' +
-          'received %s at index %s.',
-          getPostfixForTypeWarning(checker),
-          i
-        );
-        return emptyFunction.thatReturnsNull;
-      }
-    }
-
-    function validate(props, propName, componentName, location, propFullName) {
-      for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
-        var checker = arrayOfTypeCheckers[i];
-        if (checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret) == null) {
-          return null;
-        }
-      }
-
-      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`.'));
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createNodeChecker() {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (!isNode(props[propName])) {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`, expected a ReactNode.'));
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createShapeTypeChecker(shapeTypes) {
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== 'object') {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
-      }
-      for (var key in shapeTypes) {
-        var checker = shapeTypes[key];
-        if (!checker) {
-          continue;
-        }
-        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-        if (error) {
-          return error;
-        }
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createStrictShapeTypeChecker(shapeTypes) {
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== 'object') {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
-      }
-      // We need to check all keys in case some are required but missing from
-      // props.
-      var allKeys = assign({}, props[propName], shapeTypes);
-      for (var key in allKeys) {
-        var checker = shapeTypes[key];
-        if (!checker) {
-          return new PropTypeError(
-            'Invalid ' + location + ' `' + propFullName + '` key `' + key + '` supplied to `' + componentName + '`.' +
-            '\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
-            '\nValid keys: ' +  JSON.stringify(Object.keys(shapeTypes), null, '  ')
-          );
-        }
-        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-        if (error) {
-          return error;
-        }
-      }
-      return null;
-    }
-
-    return createChainableTypeChecker(validate);
-  }
-
-  function isNode(propValue) {
-    switch (typeof propValue) {
-      case 'number':
-      case 'string':
-      case 'undefined':
-        return true;
-      case 'boolean':
-        return !propValue;
-      case 'object':
-        if (Array.isArray(propValue)) {
-          return propValue.every(isNode);
-        }
-        if (propValue === null || isValidElement(propValue)) {
-          return true;
-        }
-
-        var iteratorFn = getIteratorFn(propValue);
-        if (iteratorFn) {
-          var iterator = iteratorFn.call(propValue);
-          var step;
-          if (iteratorFn !== propValue.entries) {
-            while (!(step = iterator.next()).done) {
-              if (!isNode(step.value)) {
-                return false;
-              }
+    var RE_WHITESPACES = /\s+/;
+    function normalizeEvents(events) {
+        if (events) {
+            if (Array.isArray(events)) {
+                return events;
             }
-          } else {
-            // Iterator will provide entry [k,v] tuples rather than values.
-            while (!(step = iterator.next()).done) {
-              var entry = step.value;
-              if (entry) {
-                if (!isNode(entry[1])) {
-                  return false;
+            else {
+                return String(events).split(RE_WHITESPACES);
+            }
+        }
+    }
+
+    var __extends = (undefined && undefined.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    var Label = /** @class */ (function (_super) {
+        __extends(Label, _super);
+        function Label() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        Label.propTypes = {
+            disabled: PropTypes.bool,
+            hidden: PropTypes.bool
+        };
+        return Label;
+    }(React.Component));
+
+    var __extends$1 = (undefined && undefined.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    var Panel = /** @class */ (function (_super) {
+        __extends$1(Panel, _super);
+        function Panel() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        return Panel;
+    }(React.Component));
+
+    var __assign$1 = (undefined && undefined.__assign) || function () {
+        __assign$1 = Object.assign || function(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                    t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign$1.apply(this, arguments);
+    };
+    var __rest = (undefined && undefined.__rest) || function (s, e) {
+        var t = {};
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+            t[p] = s[p];
+        if (s != null && typeof Object.getOwnPropertySymbols === "function")
+            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
+                t[p[i]] = s[p[i]];
+        return t;
+    };
+    function parseTabEntries(propTabs, children) {
+        var entries = [];
+        // prop entries
+        if (propTabs && propTabs.length) {
+            entries.push.apply(entries, propTabs.map(function (_entry) {
+                var entry = __assign$1({}, _entry);
+                if (entry.key === undefined) {
+                    entry.key = null;
                 }
-              }
+                return entry;
+            }));
+        }
+        // children
+        if (children) {
+            var currentLabelProps_1 = {};
+            var currentLabelItems_1 = [];
+            var currentPanelProps_1 = {};
+            var currentPanelItems_1 = [];
+            var key_1;
+            var disabled_1;
+            var hidden_1;
+            var pushEntry_1 = function () {
+                entries.push({
+                    labelProps: currentLabelProps_1,
+                    label: currentLabelItems_1,
+                    panelProps: currentPanelProps_1,
+                    panel: currentPanelItems_1,
+                    key: key_1,
+                    disabled: disabled_1,
+                    hidden: hidden_1
+                });
+            };
+            React__default.Children.forEach(children, function (child) {
+                var element = child;
+                if (element.type && element.type === Label) {
+                    if (currentLabelItems_1.length) { // end of previous entry
+                        pushEntry_1();
+                    }
+                    var _a = element.props, itemDisabled = _a.disabled, itemHidden = _a.hidden, restLabelProps = __rest(_a, ["disabled", "hidden"]);
+                    currentLabelProps_1 = restLabelProps;
+                    currentLabelItems_1 = [];
+                    if (Array.isArray(element.props.children)) {
+                        currentLabelItems_1.push.apply(currentLabelItems_1, element.props.children);
+                    }
+                    else {
+                        currentLabelItems_1.push(element.props.children);
+                    }
+                    currentPanelProps_1 = {};
+                    currentPanelItems_1 = [];
+                    key_1 = typeof element.key !== 'undefined' ? element.key : entries.length;
+                    disabled_1 = itemDisabled;
+                    hidden_1 = itemHidden;
+                }
+                else {
+                    if (!currentLabelItems_1.length) {
+                        currentLabelItems_1.push('');
+                    }
+                    if (element.type && element.type === Panel) {
+                        currentPanelProps_1 = __assign$1({}, currentPanelProps_1, element.props);
+                        if (Array.isArray(element.props.children)) {
+                            currentPanelItems_1.push.apply(currentPanelItems_1, element.props.children);
+                        }
+                        else {
+                            currentPanelItems_1.push(element.props.children);
+                        }
+                    }
+                    else if (element.type) {
+                        currentPanelItems_1.push(element);
+                    }
+                }
+            });
+            if (currentLabelItems_1.length) {
+                pushEntry_1();
             }
-          }
-        } else {
-          return false;
         }
-
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  function isSymbol(propType, propValue) {
-    // Native Symbol.
-    if (propType === 'symbol') {
-      return true;
+        return entries;
     }
 
-    // 19.4.3.5 Symbol.prototype[@@toStringTag] === 'Symbol'
-    if (propValue['@@toStringTag'] === 'Symbol') {
-      return true;
-    }
-
-    // Fallback for non-spec compliant Symbols which are polyfilled.
-    if (typeof Symbol === 'function' && propValue instanceof Symbol) {
-      return true;
-    }
-
-    return false;
-  }
-
-  // Equivalent of `typeof` but with special handling for array and regexp.
-  function getPropType(propValue) {
-    var propType = typeof propValue;
-    if (Array.isArray(propValue)) {
-      return 'array';
-    }
-    if (propValue instanceof RegExp) {
-      // Old webkits (at least until Android 4.0) return 'function' rather than
-      // 'object' for typeof a RegExp. We'll normalize this here so that /bla/
-      // passes PropTypes.object.
-      return 'object';
-    }
-    if (isSymbol(propType, propValue)) {
-      return 'symbol';
-    }
-    return propType;
-  }
-
-  // This handles more types than `getPropType`. Only used for error messages.
-  // See `createPrimitiveTypeChecker`.
-  function getPreciseType(propValue) {
-    if (typeof propValue === 'undefined' || propValue === null) {
-      return '' + propValue;
-    }
-    var propType = getPropType(propValue);
-    if (propType === 'object') {
-      if (propValue instanceof Date) {
-        return 'date';
-      } else if (propValue instanceof RegExp) {
-        return 'regexp';
-      }
-    }
-    return propType;
-  }
-
-  // Returns a string that is postfixed to a warning about an invalid type.
-  // For example, "undefined" or "of type array"
-  function getPostfixForTypeWarning(value) {
-    var type = getPreciseType(value);
-    switch (type) {
-      case 'array':
-      case 'object':
-        return 'an ' + type;
-      case 'boolean':
-      case 'date':
-      case 'regexp':
-        return 'a ' + type;
-      default:
-        return type;
-    }
-  }
-
-  // Returns class name of the object, if any.
-  function getClassName(propValue) {
-    if (!propValue.constructor || !propValue.constructor.name) {
-      return ANONYMOUS;
-    }
-    return propValue.constructor.name;
-  }
-
-  ReactPropTypes.checkPropTypes = checkPropTypes;
-  ReactPropTypes.PropTypes = ReactPropTypes;
-
-  return ReactPropTypes;
-};
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-
-
-/* eslint-disable no-unused-vars */
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-function shouldUseNative() {
-	try {
-		if (!Object.assign) {
-			return false;
-		}
-
-		// Detect buggy property enumeration order in older V8 versions.
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
-		test1[5] = 'de';
-		if (Object.getOwnPropertyNames(test1)[0] === '5') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test2 = {};
-		for (var i = 0; i < 10; i++) {
-			test2['_' + String.fromCharCode(i)] = i;
-		}
-		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-			return test2[n];
-		});
-		if (order2.join('') !== '0123456789') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test3 = {};
-		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-			test3[letter] = letter;
-		});
-		if (Object.keys(Object.assign({}, test3)).join('') !==
-				'abcdefghijklmnopqrst') {
-			return false;
-		}
-
-		return true;
-	} catch (err) {
-		// We don't expect any of the above to throw, but better to be safe.
-		return false;
-	}
-}
-
-module.exports = shouldUseNative() ? Object.assign : function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (getOwnPropertySymbols) {
-			symbols = getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
-};
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-if (process.env.NODE_ENV !== 'production') {
-  var invariant = __webpack_require__(3);
-  var warning = __webpack_require__(5);
-  var ReactPropTypesSecret = __webpack_require__(4);
-  var loggedTypeFailures = {};
-}
-
-/**
- * Assert that the values match with the type specs.
- * Error messages are memorized and will only be shown once.
- *
- * @param {object} typeSpecs Map of name to a ReactPropType
- * @param {object} values Runtime values that need to be type-checked
- * @param {string} location e.g. "prop", "context", "child context"
- * @param {string} componentName Name of the component for error messages.
- * @param {?Function} getStack Returns the component stack.
- * @private
- */
-function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
-  if (process.env.NODE_ENV !== 'production') {
-    for (var typeSpecName in typeSpecs) {
-      if (typeSpecs.hasOwnProperty(typeSpecName)) {
-        var error;
-        // Prop type validation may throw. In case they do, we don't want to
-        // fail the render phase where it didn't fail before. So we log it.
-        // After these have been cleaned up, we'll let them throw.
-        try {
-          // This is intentionally an invariant that gets caught. It's the same
-          // behavior as without this statement except with a better message.
-          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'the `prop-types` package, but received `%s`.', componentName || 'React class', location, typeSpecName, typeof typeSpecs[typeSpecName]);
-          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
-        } catch (ex) {
-          error = ex;
-        }
-        warning(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error);
-        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
-          // Only monitor this failure once because there tends to be a lot of the
-          // same error.
-          loggedTypeFailures[error.message] = true;
-
-          var stack = getStack ? getStack() : '';
-
-          warning(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
-        }
-      }
-    }
-  }
-}
-
-module.exports = checkPropTypes;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-var emptyFunction = __webpack_require__(2);
-var invariant = __webpack_require__(3);
-var ReactPropTypesSecret = __webpack_require__(4);
-
-module.exports = function() {
-  function shim(props, propName, componentName, location, propFullName, secret) {
-    if (secret === ReactPropTypesSecret) {
-      // It is still safe when called from React.
-      return;
-    }
-    invariant(
-      false,
-      'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
-      'Use PropTypes.checkPropTypes() to call them. ' +
-      'Read more at http://fb.me/use-check-prop-types'
-    );
-  };
-  shim.isRequired = shim;
-  function getShim() {
-    return shim;
-  };
-  // Important!
-  // Keep this list in sync with production version in `./factoryWithTypeCheckers.js`.
-  var ReactPropTypes = {
-    array: shim,
-    bool: shim,
-    func: shim,
-    number: shim,
-    object: shim,
-    string: shim,
-    symbol: shim,
-
-    any: shim,
-    arrayOf: getShim,
-    element: shim,
-    instanceOf: getShim,
-    node: shim,
-    objectOf: getShim,
-    oneOf: getShim,
-    oneOfType: getShim,
-    shape: getShim,
-    exact: getShim
-  };
-
-  ReactPropTypes.checkPropTypes = emptyFunction;
-  ReactPropTypes.PropTypes = ReactPropTypes;
-
-  return ReactPropTypes;
-};
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    var invalidNormalizedPosition = {
+        index: -1,
+        key: undefined
     };
-})();
-
-var ReactTabberLabel = /** @class */ (function (_super) {
-    __extends(ReactTabberLabel, _super);
-    function ReactTabberLabel() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function getNormalizedPosition(entries, position) {
+        if (typeof position === 'number') {
+            return {
+                index: position,
+                key: entries[position] && entries[position].key
+            };
+        }
+        else if (isFinite(position)) {
+            var index = parseInt(position);
+            return {
+                index: index,
+                key: entries[index].key
+            };
+        }
+        else if (position) {
+            var result_1 = undefined;
+            entries.some(function (entry, i) {
+                if (entry.key === position) {
+                    result_1 = {
+                        index: i,
+                        key: entry.key
+                    };
+                    return true;
+                }
+                return false;
+            });
+            return result_1 || invalidNormalizedPosition;
+        }
+        else {
+            return invalidNormalizedPosition;
+        }
     }
-    return ReactTabberLabel;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
-/* harmony default export */ __webpack_exports__["a"] = (ReactTabberLabel);
 
+    var PREFIX = '__react-tabber';
+    var NUMBER_MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
+    var currentTabberContainerId = -1;
+    function getNextTabContainerId() {
+        currentTabberContainerId = (currentTabberContainerId + 1) % NUMBER_MAX_SAFE_INTEGER;
+        return currentTabberContainerId;
+    }
+    function getLabelItemId(tabberId, side, index) {
+        return PREFIX + "__" + tabberId + "__" + side + "__label__" + index;
+    }
+    function getPanelItemId(tabberId, index) {
+        return PREFIX + "__" + tabberId + "__panel__" + index;
+    }
 
-/***/ }),
-/* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    var classNameSuffix = {
+        active: 'active',
+        inactive: 'inactive',
+        disabled: 'disabled',
+        hidden: 'hidden',
+        header: 'header',
+        footer: 'footer'
     };
-})();
 
-var ReactTabberPage = /** @class */ (function (_super) {
-    __extends(ReactTabberPage, _super);
-    function ReactTabberPage() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function createEventHandler(events, handler) {
+        var eventHandlers = {};
+        events && events.length && events.forEach(function (event) {
+            eventHandlers[event] = handler;
+        });
+        return eventHandlers;
     }
-    return ReactTabberPage;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
-/* harmony default export */ __webpack_exports__["a"] = (ReactTabberPage);
 
+    var __assign$2 = (undefined && undefined.__assign) || function () {
+        __assign$2 = Object.assign || function(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                    t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign$2.apply(this, arguments);
+    };
+    var UP = 'Up';
+    var DOWN = 'Down';
+    var LEFT = 'Left';
+    var RIGHT = 'Right';
+    var ARROW_UP = 'ArrowUp';
+    var ARROW_DOWN = 'ArrowDown';
+    var ARROW_LEFT = 'ArrowLeft';
+    var ARROW_RIGHT = 'ArrowRight';
+    var TAB = 'Tab';
+    var HOME = 'Home';
+    var END = 'End';
+    var SPACE = ' ';
+    var ENTER = 'Enter';
+    function createLabelContainer(props, context, entries, side, fnSwitchTo, fnSwitchPrevious, fnSwitchNext, fnSwitchFirst, fnSwitchLast) {
+        var switchResult;
+        function onKeyDown(e, pos) {
+            if (e.key) {
+                switch (e.key) {
+                    case UP:
+                    case LEFT:
+                    case ARROW_UP:
+                    case ARROW_LEFT:
+                        switchResult = fnSwitchPrevious();
+                        break;
+                    case DOWN:
+                    case RIGHT:
+                    case ARROW_DOWN:
+                    case ARROW_RIGHT:
+                        switchResult = fnSwitchNext();
+                        break;
+                    case TAB:
+                        switchResult = e.shiftKey ? fnSwitchPrevious() : fnSwitchNext();
+                        if (switchResult) {
+                            e.preventDefault();
+                        }
+                        break;
+                    case HOME:
+                        switchResult = fnSwitchFirst();
+                        break;
+                    case END:
+                        switchResult = fnSwitchLast();
+                        break;
+                    case SPACE:
+                    case ENTER:
+                        switchResult = fnSwitchTo(pos);
+                        break;
+                }
+            }
+            if (switchResult) {
+                var targetNode = e.currentTarget.parentNode.childNodes[switchResult.index];
+                targetNode && targetNode.focus && targetNode.focus();
+                e.preventDefault();
+            }
+        }
+        var mode = props.mode, keyboardSwitch = props.keyboardSwitch, labelContainerClassName = props.labelContainerClassName, labelItemClassName = props.labelItemClassName, triggerEvents = props.triggerEvents, delayTriggerEvents = props.delayTriggerEvents, delayTriggerCancelEvents = props.delayTriggerCancelEvents, delayTriggerLatency = props.delayTriggerLatency;
+        var labelContainerLocationClassName = labelContainerClassName + '-' + side;
+        var labelContainerModeClassName = labelContainerClassName + '-' + mode;
+        var labelContainerLocationModeClassName = labelContainerClassName + '-' + side + '-' + mode;
+        var labelItemActiveClassName = labelItemClassName + '-' + classNameSuffix.active;
+        var labelItemInactiveClassName = labelItemClassName + '-' + classNameSuffix.inactive;
+        var labelItemDisabledClassName = labelItemClassName + '-' + classNameSuffix.disabled;
+        var labelItemHiddenClassName = labelItemClassName + '-' + classNameSuffix.hidden;
+        var tabberId = context.tabberId, currentIndex = context.currentPosition.index;
+        var labelContainer = React__default.createElement("div", { className: labelContainerClassName + ' ' + labelContainerLocationClassName + ' ' + labelContainerModeClassName + ' ' + labelContainerLocationModeClassName, role: "tablist" }, entries.map(function (entry, index) {
+            var labelProps = entry.labelProps, key = entry.key, disabled = entry.disabled, hidden = entry.hidden;
+            var pos = { index: index, key: key };
+            var labelDelayTriggerCancelProps;
+            var labelDelayTriggerProps;
+            var labelTriggerProps;
+            if (!disabled && !hidden) {
+                var doSwitch_1 = function () {
+                    clearTimeout(context.delayTimeout);
+                    fnSwitchTo(pos);
+                };
+                var localDelayTimeout_1;
+                var delayDoSwitch = (delayTriggerLatency) <= 0 ?
+                    doSwitch_1 :
+                    function () {
+                        clearTimeout(context.delayTimeout);
+                        localDelayTimeout_1 = context.delayTimeout = setTimeout(doSwitch_1, delayTriggerLatency);
+                    };
+                var cancelDelayDoSwitch = function () {
+                    if (localDelayTimeout_1 === context.delayTimeout) {
+                        clearTimeout(localDelayTimeout_1);
+                    }
+                };
+                if (delayTriggerEvents && delayTriggerEvents.length) {
+                    labelDelayTriggerCancelProps = createEventHandler(delayTriggerCancelEvents, cancelDelayDoSwitch);
+                    labelDelayTriggerProps = createEventHandler(delayTriggerEvents, delayDoSwitch);
+                }
+                labelTriggerProps = createEventHandler(triggerEvents, doSwitch_1);
+            }
+            var isActive = index === currentIndex;
+            var labelItemStatusClassName = isActive ? labelItemActiveClassName : labelItemInactiveClassName;
+            var labelItemAllClassName = labelItemClassName + ' ' + labelItemStatusClassName;
+            if (disabled) {
+                labelItemAllClassName += ' ' + labelItemDisabledClassName;
+            }
+            if (hidden) {
+                labelItemAllClassName += ' ' + labelItemHiddenClassName;
+            }
+            return React__default.createElement("label", __assign$2({}, labelProps, labelDelayTriggerCancelProps, labelDelayTriggerProps, labelTriggerProps, { className: labelItemAllClassName, tabIndex: 0, id: getLabelItemId(tabberId, side, index), role: "tab", "aria-controls": getPanelItemId(tabberId, index), "aria-selected": isActive, "aria-expanded": isActive, key: key ? 'key-' + key : 'index-' + index, onKeyDown: keyboardSwitch ? function (e) { return onKeyDown(e, pos); } : undefined }), entry.label);
+        }));
+        return labelContainer;
+    }
 
-/***/ })
-/******/ ])["default"];
-});
+    var __assign$3 = (undefined && undefined.__assign) || function () {
+        __assign$3 = Object.assign || function(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                    t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign$3.apply(this, arguments);
+    };
+    function createPanelContainer(props, context, entries, refLabelSide) {
+        var mode = props.mode, panelContainerClassName = props.panelContainerClassName, panelItemClassName = props.panelItemClassName;
+        var tabberId = context.tabberId, currentIndex = context.currentPosition.index;
+        var panelContainerModeClassName = panelContainerClassName + '-' + mode;
+        var panelItemActiveClassName = panelItemClassName + '-' + classNameSuffix.active;
+        var panelItemInactiveClassName = panelItemClassName + '-' + classNameSuffix.inactive;
+        var panelItemDisabledClassName = panelItemClassName + '-' + classNameSuffix.disabled;
+        var panelItemHiddenClassName = panelItemClassName + '-' + classNameSuffix.hidden;
+        return React__default.createElement("div", { className: panelContainerClassName + ' ' + panelContainerModeClassName }, entries.map(function (entry, index) {
+            var panelProps = entry.panelProps, key = entry.key, disabled = entry.disabled, hidden = entry.hidden;
+            var isActive = index === currentIndex;
+            var panelItemStatusClassName = isActive ? panelItemActiveClassName : panelItemInactiveClassName;
+            var panelItemAllClassName = panelItemClassName + ' ' + panelItemStatusClassName;
+            if (disabled) {
+                panelItemAllClassName += ' ' + panelItemDisabledClassName;
+            }
+            if (hidden) {
+                panelItemAllClassName += ' ' + panelItemHiddenClassName;
+            }
+            return React__default.createElement("div", __assign$3({}, panelProps, { className: panelItemAllClassName, id: getPanelItemId(tabberId, index), role: "tabpanel", "aria-labelledby": getLabelItemId(tabberId, refLabelSide, index), "aria-hidden": !isActive, key: key ? 'key-' + key : 'index-' + index }), entry.panel);
+        }));
+    }
+
+    function createTabContainer(props, context, entries, fnSwitchTo, fnSwitchPrevious, fnSwitchNext, fnSwitchFirst, fnSwitchLast) {
+        var mode = props.mode, tabContainerClassName = props.tabContainerClassName, showHeaderLabelContainer = props.showHeaderLabelContainer, showFooterLabelContainer = props.showFooterLabelContainer;
+        var header = classNameSuffix.header, footer = classNameSuffix.footer;
+        var tabContainerModeClassName = tabContainerClassName + '-' + mode;
+        return React__default.createElement("div", { className: tabContainerClassName + ' ' + tabContainerModeClassName },
+            showHeaderLabelContainer ?
+                createLabelContainer(props, context, entries, header, fnSwitchTo, fnSwitchPrevious, fnSwitchNext, fnSwitchFirst, fnSwitchLast) :
+                null,
+            createPanelContainer(props, context, entries, showHeaderLabelContainer || !showFooterLabelContainer ? header : footer),
+            showFooterLabelContainer ?
+                createLabelContainer(props, context, entries, footer, fnSwitchTo, fnSwitchPrevious, fnSwitchNext, fnSwitchFirst, fnSwitchLast)
+                : null);
+    }
+
+    var __extends$2 = (undefined && undefined.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    var SwitchDirection;
+    (function (SwitchDirection) {
+        SwitchDirection[SwitchDirection["Backward"] = 0] = "Backward";
+        SwitchDirection[SwitchDirection["Forward"] = 1] = "Forward";
+    })(SwitchDirection || (SwitchDirection = {}));
+    var Tab = /** @class */ (function (_super) {
+        __extends$2(Tab, _super);
+        function Tab(props) {
+            var _this = _super.call(this, props) || this;
+            _this.tabContext = {
+                tabberId: getNextTabContainerId(),
+                prevPosition: invalidNormalizedPosition,
+                currentPosition: invalidNormalizedPosition,
+                delayTimeout: 0
+            };
+            _this.switchTo = _this.switchTo.bind(_this);
+            _this._switchNeighbor = _this._switchNeighbor.bind(_this);
+            _this.switchPrevious = _this.switchPrevious.bind(_this);
+            _this.switchNext = _this.switchNext.bind(_this);
+            _this.switchFirst = _this.switchFirst.bind(_this);
+            _this.switchLast = _this.switchLast.bind(_this);
+            _this.state = {
+                manageActiveIndex: true,
+                targetPosition: -1,
+            };
+            return _this;
+        }
+        Tab.getDerivedStateFromProps = function (props) {
+            var activePosition = props.activePosition;
+            if (activePosition === undefined || activePosition === null || (typeof activePosition === 'number' && !isFinite(activePosition))) {
+                return {
+                    manageActiveIndex: true
+                };
+            }
+            return {
+                manageActiveIndex: false,
+                targetPosition: activePosition
+            };
+        };
+        Tab.prototype.componentWillUnmount = function () {
+            clearTimeout(this.tabContext.delayTimeout);
+        };
+        Tab.prototype.switchTo = function (position) {
+            var manageActiveIndex = this.state.manageActiveIndex;
+            var onUpdateActivePosition = this.props.onUpdateActivePosition;
+            if (manageActiveIndex) {
+                this.setState({
+                    targetPosition: position.index
+                });
+            }
+            else if (onUpdateActivePosition) {
+                onUpdateActivePosition(position);
+            }
+            return position;
+        };
+        Tab.prototype._switchNeighbor = function (fromIndex, direction, options) {
+            var includeDisabled, includeHidden, loop, exclude;
+            if (options) {
+                includeDisabled = options.includeDisabled;
+                includeHidden = options.includeHidden;
+                loop = options.loop;
+                exclude = options.exclude;
+            }
+            var entries = this.props.tabs;
+            var excludeIndecies = exclude ? exclude.map(function (pos) { return getNormalizedPosition(entries, pos).index; }) : [];
+            var itemCount = entries.length;
+            var maxIterationCount = -1;
+            if (loop) {
+                if (fromIndex >= 0 && fromIndex < itemCount) {
+                    maxIterationCount = itemCount - 1;
+                }
+                else {
+                    maxIterationCount = itemCount;
+                }
+            }
+            else if (direction === SwitchDirection.Backward) {
+                maxIterationCount = fromIndex;
+            }
+            else if (direction === SwitchDirection.Forward) {
+                maxIterationCount = itemCount - fromIndex - 1;
+            }
+            var iterationStep = direction === SwitchDirection.Backward ? -1 : 1;
+            for (var i = 1; i <= maxIterationCount; i++) {
+                var tabItemIndex = (fromIndex + i * iterationStep + itemCount) % itemCount;
+                if (excludeIndecies.indexOf(tabItemIndex) >= 0) {
+                    continue;
+                }
+                var _a = entries[tabItemIndex], disabled = _a.disabled, hidden = _a.hidden;
+                if ((!disabled && !hidden) ||
+                    (includeDisabled && !hidden) ||
+                    (!disabled && includeHidden) ||
+                    (includeDisabled && includeHidden)) {
+                    return this.switchTo(getNormalizedPosition(entries, tabItemIndex));
+                }
+            }
+        };
+        Tab.prototype.switchPrevious = function (options) {
+            return this._switchNeighbor(this.tabContext.currentPosition.index, SwitchDirection.Backward, options);
+        };
+        Tab.prototype.switchNext = function (options) {
+            return this._switchNeighbor(this.tabContext.currentPosition.index, SwitchDirection.Forward, options);
+        };
+        Tab.prototype.switchFirst = function (options) {
+            return this._switchNeighbor(-1, SwitchDirection.Forward, options);
+        };
+        Tab.prototype.switchLast = function (options) {
+            return this._switchNeighbor(this.props.tabs.length, SwitchDirection.Backward, options);
+        };
+        Tab.prototype.render = function () {
+            var _a = this, props = _a.props, state = _a.state, tabContext = _a.tabContext;
+            var targetPosition = state.targetPosition;
+            var normalizedPrevPosition = tabContext.prevPosition;
+            var prevIndex = normalizedPrevPosition.index;
+            var tabs = props.tabs;
+            var normalizedTargetPosition = getNormalizedPosition(tabs, targetPosition);
+            var targetIndex = normalizedTargetPosition.index;
+            var entryCount = tabs.length;
+            var currentIndex;
+            if (targetIndex === -1) {
+                currentIndex = entryCount > 0 ? 0 : -1;
+                tabContext.currentPosition = getNormalizedPosition(tabs, currentIndex);
+            }
+            else if (targetIndex < entryCount) {
+                currentIndex = targetIndex;
+                tabContext.currentPosition = normalizedTargetPosition;
+            }
+            else {
+                currentIndex = entryCount - 1;
+                tabContext.currentPosition = getNormalizedPosition(tabs, currentIndex);
+            }
+            if (prevIndex !== currentIndex && props.onSwitching) {
+                props.onSwitching(normalizedPrevPosition, tabContext.currentPosition);
+            }
+            return createTabContainer(props, tabContext, tabs, this.switchTo, this.switchPrevious, this.switchNext, this.switchFirst, this.switchLast);
+        };
+        Tab.prototype.handleIndexChange = function () {
+            var _a = this, props = _a.props, tabContext = _a.tabContext;
+            var onSwitched = props.onSwitched;
+            var prevPosition = tabContext.prevPosition, currentPosition = tabContext.currentPosition;
+            if (prevPosition.index !== currentPosition.index && onSwitched) {
+                onSwitched(prevPosition, currentPosition);
+            }
+            tabContext.prevPosition = currentPosition;
+        };
+        Tab.prototype.componentDidMount = function () {
+            this.handleIndexChange();
+        };
+        Tab.prototype.componentDidUpdate = function () {
+            this.handleIndexChange();
+        };
+        Tab.propTypes = tabPropTypes;
+        Tab.defaultProps = defaultProps;
+        return Tab;
+    }(React__default.Component));
+
+    /// <reference path='./type/public.d.ts' />
+    var __extends$3 = (undefined && undefined.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    var __assign$4 = (undefined && undefined.__assign) || function () {
+        __assign$4 = Object.assign || function(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                    t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign$4.apply(this, arguments);
+    };
+    var __rest$1 = (undefined && undefined.__rest) || function (s, e) {
+        var t = {};
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+            t[p] = s[p];
+        if (s != null && typeof Object.getOwnPropertySymbols === "function")
+            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
+                t[p[i]] = s[p[i]];
+        return t;
+    };
+    var ReactTabber = /** @class */ (function (_super) {
+        __extends$3(ReactTabber, _super);
+        function ReactTabber() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        ReactTabber.prototype.render = function () {
+            var _a = this.props, tabs = _a.tabs, children = _a.children, triggerEvents = _a.triggerEvents, delayTriggerEvents = _a.delayTriggerEvents, delayTriggerCancelEvents = _a.delayTriggerCancelEvents, props = __rest$1(_a, ["tabs", "children", "triggerEvents", "delayTriggerEvents", "delayTriggerCancelEvents"]);
+            var allTabs = parseTabEntries(tabs, children);
+            return React__default.createElement(Tab, __assign$4({}, props, { triggerEvents: normalizeEvents(triggerEvents), delayTriggerEvents: normalizeEvents(delayTriggerEvents), delayTriggerCancelEvents: normalizeEvents(delayTriggerCancelEvents), tabs: allTabs }));
+        };
+        ReactTabber.Label = Label;
+        ReactTabber.Panel = Panel;
+        ReactTabber.propTypes = propTypes;
+        ReactTabber.defaultProps = defaultProps;
+        return ReactTabber;
+    }(React__default.Component));
+
+    return ReactTabber;
+
+}));
