@@ -1,14 +1,4 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else {
-		var a = factory();
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
-	}
-})(window, function() {
-return /******/ (function(modules) { // webpackBootstrap
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -107,6 +97,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(1));
 var react_dom_1 = __webpack_require__(6);
 var react_tabber_1 = __importDefault(__webpack_require__(13));
+__webpack_require__(30);
+__webpack_require__(33);
 var Label = react_tabber_1.default.Label, Panel = react_tabber_1.default.Panel;
 var tabs = [
     { label: 'title1', panel: react_1.default.createElement("div", null, "content1") },
@@ -117,7 +109,7 @@ react_dom_1.render(react_1.default.createElement(react_tabber_1.default, { tabs:
     react_1.default.createElement(Panel, null, "content 3"),
     react_1.default.createElement(Label, null, "title4"),
     react_1.default.createElement(Panel, null, "content 4"),
-    react_1.default.createElement("p", null, "another content 4")), document.getElementById('container'));
+    react_1.default.createElement("p", null, "another content 4")), document.getElementById('app'));
 
 
 /***/ }),
@@ -23104,7 +23096,7 @@ g = (function() {
 
 try {
 	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
+	g = g || new Function("return this")();
 } catch (e) {
 	// This works if the window reference is available
 	if (typeof window === "object") g = window;
@@ -25009,6 +25001,37 @@ function createPanelContainer(props, context, entries, refLabelSide) {
 /* harmony default export */ __webpack_exports__["default"] = (createPanelContainer);
 
 
+/***/ }),
+/* 30 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _css_layout_index_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
+/* harmony import */ var _css_layout_index_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_layout_index_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _css_skin_gray_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32);
+/* harmony import */ var _css_skin_gray_css__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_skin_gray_css__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
 /***/ })
 /******/ ]);
-});

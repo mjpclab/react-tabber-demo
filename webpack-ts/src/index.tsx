@@ -2,6 +2,9 @@ import React from 'react'
 import {render} from 'react-dom';
 import ReactTabber from 'react-tabber'
 
+import 'react-tabber/src/built/theme/gray';
+import './index.css';
+
 const {Label, Panel} = ReactTabber;
 
 const tabs = [
@@ -17,4 +20,4 @@ render(
 		<Panel>content 4</Panel>
 		<p>another content 4</p>
 	</ReactTabber>
-	, document.getElementById('container'));
+	, document.getElementById('app'));
