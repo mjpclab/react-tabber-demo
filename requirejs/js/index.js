@@ -28,14 +28,14 @@ require(['react', 'react-dom', 'react-tabber'], function (React, ReactDOM, React
 	var Label = ReactTabber.Label;
 	var Panel = ReactTabber.Panel;
 
-	var tabs = [
+	var entries = [
 		{label: 'title1', panel: 'content 1'},
 		{label: 'title2', panel: 'content 2'}
 	];
 
 	ReactDOM.render(
 		React.createElement(ReactTabber,
-			{tabs: tabs},
+			{entries: entries},
 			React.createElement(Label, null, 'title3'),
 			React.createElement(Panel, null, 'content 3'),
 			React.createElement(Label, null, 'title4'),

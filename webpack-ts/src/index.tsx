@@ -2,17 +2,17 @@ import React from 'react'
 import {render} from 'react-dom';
 import ReactTabber from 'react-tabber'
 
-import 'react-tabber/src/built/theme/gray';
+import 'react-tabber/dist/theme/gray.css';
 import './index.css';
 
 const {Label, Panel} = ReactTabber;
 
-const tabs = [
+const entries = [
 	{label: 'title1', panel: <div>content1</div>},
 	{label: <span>title2</span>, panel: <div>content2</div>},
 ];
 render(
-	<ReactTabber tabs={tabs}>
+	<ReactTabber entries={entries}>
 		<Label>title3</Label>
 		<Panel>content 3</Panel>
 

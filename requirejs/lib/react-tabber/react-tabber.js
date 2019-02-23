@@ -18,31 +18,63 @@
         };
         return __assign.apply(this, arguments);
     };
-    var sharedPropTypes = {
-        tabs: PropTypes.arrayOf(PropTypes.shape({
-            label: PropTypes.node.isRequired,
-            panel: PropTypes.node.isRequired,
-            key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-        })),
+    var switchFuncPropTypes = {
+        fnSwitchTo: PropTypes.func,
+        fnSwitchPrevious: PropTypes.func,
+        fnSwitchNext: PropTypes.func,
+        fnSwitchFirst: PropTypes.func,
+        fnSwitchLast: PropTypes.func
+    };
+    var entriesPropType = PropTypes.arrayOf(PropTypes.shape({
+        label: PropTypes.node.isRequired,
+        panel: PropTypes.node.isRequired,
+        key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    }));
+    var necessaryPropTypes = {
+        entries: entriesPropType,
         mode: PropTypes.string,
         keyboardSwitch: PropTypes.bool,
         delayTriggerLatency: PropTypes.number,
-        activePosition: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        onSwitching: PropTypes.func,
-        onSwitched: PropTypes.func,
         tabContainerClassName: PropTypes.string,
         labelContainerClassName: PropTypes.string,
         showHeaderLabelContainer: PropTypes.bool,
         showFooterLabelContainer: PropTypes.bool,
         labelItemClassName: PropTypes.string,
         panelContainerClassName: PropTypes.string,
-        panelItemClassName: PropTypes.string,
+        panelItemClassName: PropTypes.string
     };
-    var propTypes = __assign({}, sharedPropTypes, { triggerEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]), delayTriggerEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]), delayTriggerCancelEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]) });
-    var tabPropTypes = __assign({}, sharedPropTypes, { triggerEvents: PropTypes.arrayOf(PropTypes.string), delayTriggerEvents: PropTypes.arrayOf(PropTypes.string), delayTriggerCancelEvents: PropTypes.arrayOf(PropTypes.string) });
+    var callbackPropTypes = {
+        onUpdateActivePosition: PropTypes.func,
+        onUpdateTargetPosition: PropTypes.func,
+        onSwitching: PropTypes.func,
+        onSwitched: PropTypes.func
+    };
+    var eventPropTypes = {
+        triggerEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+        delayTriggerEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+        delayTriggerCancelEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)])
+    };
+    var normalizedEventPropTypes = {
+        triggerEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+        delayTriggerEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+        delayTriggerCancelEvents: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)])
+    };
+    var publicPropTypes = __assign({}, necessaryPropTypes, callbackPropTypes, eventPropTypes, { activePosition: PropTypes.oneOfType([PropTypes.string, PropTypes.number]) });
+    var tabPropTypes = __assign({}, necessaryPropTypes, callbackPropTypes, normalizedEventPropTypes, { activePosition: PropTypes.oneOfType([PropTypes.string, PropTypes.number]) });
+    var tabContainerPropTypes = __assign({}, necessaryPropTypes, normalizedEventPropTypes, switchFuncPropTypes, { tabContext: PropTypes.object, currentIndex: PropTypes.number });
+    var labelContainerPropTypes = __assign({}, normalizedEventPropTypes, switchFuncPropTypes, { entries: entriesPropType, mode: PropTypes.string, keyboardSwitch: PropTypes.bool, delayTriggerLatency: PropTypes.number, labelContainerClassName: PropTypes.string, labelItemClassName: PropTypes.string, tabContext: PropTypes.object, currentIndex: PropTypes.number, side: PropTypes.string });
+    var panelContainerPropTypes = {
+        entries: PropTypes.arrayOf(PropTypes.object),
+        mode: PropTypes.string,
+        panelContainerClassName: PropTypes.string,
+        panelItemClassName: PropTypes.string,
+        tabContext: PropTypes.object,
+        currentIndex: PropTypes.number,
+        refLabelSide: PropTypes.string
+    };
 
     var defaultProps = {
-        tabs: [],
+        entries: [],
         mode: "horizontal" /* Horizontal */,
         keyboardSwitch: true,
         triggerEvents: ['onClick'],
@@ -58,14 +90,12 @@
 
     var RE_WHITESPACES = /\s+/;
     function normalizeEvents(events) {
-        if (events) {
-            if (Array.isArray(events)) {
-                return events;
-            }
-            else {
-                return String(events).split(RE_WHITESPACES);
-            }
+        if (!events) {
+            return [];
         }
+        var arrayed = Array.isArray(events) ? events : String(events).split(RE_WHITESPACES);
+        var normalized = arrayed.filter(Boolean);
+        return normalized;
     }
 
     var __extends = (undefined && undefined.__extends) || (function () {
@@ -134,11 +164,11 @@
                 t[p[i]] = s[p[i]];
         return t;
     };
-    function parseTabEntries(propTabs, children) {
+    function parseTabEntries(propEntries, children) {
         var entries = [];
         // prop entries
-        if (propTabs && propTabs.length) {
-            entries.push.apply(entries, propTabs.map(function (_entry) {
+        if (propEntries && propEntries.length) {
+            entries.push.apply(entries, propEntries.map(function (_entry) {
                 var entry = __assign$1({}, _entry);
                 if (entry.key === undefined) {
                     entry.key = null;
@@ -200,7 +230,7 @@
                             currentPanelItems_1.push(element.props.children);
                         }
                     }
-                    else if (element.type) {
+                    else {
                         currentPanelItems_1.push(element);
                     }
                 }
@@ -216,7 +246,7 @@
         index: -1,
         key: undefined
     };
-    function getNormalizedPosition(entries, position) {
+    function normalizePosition(entries, position) {
         if (typeof position === 'number') {
             return {
                 index: position,
@@ -263,7 +293,7 @@
         return PREFIX + "__" + tabberId + "__panel__" + index;
     }
 
-    var classNameSuffix = {
+    var ClassNameSuffix = {
         active: 'active',
         inactive: 'inactive',
         disabled: 'disabled',
@@ -274,12 +304,25 @@
 
     function createEventHandler(events, handler) {
         var eventHandlers = {};
-        events && events.length && events.forEach(function (event) {
+        events.forEach(function (event) {
             eventHandlers[event] = handler;
         });
         return eventHandlers;
     }
 
+    var __extends$2 = (undefined && undefined.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
     var __assign$2 = (undefined && undefined.__assign) || function () {
         __assign$2 = Object.assign || function(t) {
             for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -304,9 +347,14 @@
     var END = 'End';
     var SPACE = ' ';
     var ENTER = 'Enter';
-    function createLabelContainer(props, context, entries, side, fnSwitchTo, fnSwitchPrevious, fnSwitchNext, fnSwitchFirst, fnSwitchLast) {
-        var switchResult;
-        function onKeyDown(e, pos) {
+    var LabelContainer = /** @class */ (function (_super) {
+        __extends$2(LabelContainer, _super);
+        function LabelContainer() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        LabelContainer.prototype.onKeyDown = function (e, pos) {
+            var _a = this.props, fnSwitchTo = _a.fnSwitchTo, fnSwitchPrevious = _a.fnSwitchPrevious, fnSwitchNext = _a.fnSwitchNext, fnSwitchFirst = _a.fnSwitchFirst, fnSwitchLast = _a.fnSwitchLast;
+            var switchResult;
             if (e.key) {
                 switch (e.key) {
                     case UP:
@@ -344,59 +392,77 @@
                 targetNode && targetNode.focus && targetNode.focus();
                 e.preventDefault();
             }
-        }
-        var mode = props.mode, keyboardSwitch = props.keyboardSwitch, labelContainerClassName = props.labelContainerClassName, labelItemClassName = props.labelItemClassName, triggerEvents = props.triggerEvents, delayTriggerEvents = props.delayTriggerEvents, delayTriggerCancelEvents = props.delayTriggerCancelEvents, delayTriggerLatency = props.delayTriggerLatency;
-        var labelContainerLocationClassName = labelContainerClassName + '-' + side;
-        var labelContainerModeClassName = labelContainerClassName + '-' + mode;
-        var labelContainerLocationModeClassName = labelContainerClassName + '-' + side + '-' + mode;
-        var labelItemActiveClassName = labelItemClassName + '-' + classNameSuffix.active;
-        var labelItemInactiveClassName = labelItemClassName + '-' + classNameSuffix.inactive;
-        var labelItemDisabledClassName = labelItemClassName + '-' + classNameSuffix.disabled;
-        var labelItemHiddenClassName = labelItemClassName + '-' + classNameSuffix.hidden;
-        var tabberId = context.tabberId, currentIndex = context.currentPosition.index;
-        var labelContainer = React__default.createElement("div", { className: labelContainerClassName + ' ' + labelContainerLocationClassName + ' ' + labelContainerModeClassName + ' ' + labelContainerLocationModeClassName, role: "tablist" }, entries.map(function (entry, index) {
-            var labelProps = entry.labelProps, key = entry.key, disabled = entry.disabled, hidden = entry.hidden;
-            var pos = { index: index, key: key };
-            var labelDelayTriggerCancelProps;
-            var labelDelayTriggerProps;
-            var labelTriggerProps;
-            if (!disabled && !hidden) {
-                var doSwitch_1 = function () {
-                    clearTimeout(context.delayTimeout);
-                    fnSwitchTo(pos);
-                };
-                var localDelayTimeout_1;
-                var delayDoSwitch = (delayTriggerLatency) <= 0 ?
-                    doSwitch_1 :
-                    function () {
-                        clearTimeout(context.delayTimeout);
-                        localDelayTimeout_1 = context.delayTimeout = setTimeout(doSwitch_1, delayTriggerLatency);
+        };
+        LabelContainer.prototype.render = function () {
+            var _this = this;
+            var _a = this.props, entries = _a.entries, mode = _a.mode, keyboardSwitch = _a.keyboardSwitch, triggerEvents = _a.triggerEvents, labelContainerClassName = _a.labelContainerClassName, labelItemClassName = _a.labelItemClassName, delayTriggerEvents = _a.delayTriggerEvents, delayTriggerCancelEvents = _a.delayTriggerCancelEvents, delayTriggerLatency = _a.delayTriggerLatency, tabContext = _a.tabContext, currentIndex = _a.currentIndex, side = _a.side, fnSwitchTo = _a.fnSwitchTo;
+            var labelContainerSideClassName = labelContainerClassName + '-' + side;
+            var labelContainerModeClassName = labelContainerClassName + '-' + mode;
+            var labelContainerSideModeClassName = labelContainerClassName + '-' + side + '-' + mode;
+            var labelContainerAllClassName = labelContainerClassName + ' ' + labelContainerSideClassName + ' ' + labelContainerModeClassName + ' ' + labelContainerSideModeClassName;
+            var labelItemActiveClassName = labelItemClassName + '-' + ClassNameSuffix.active;
+            var labelItemInactiveClassName = labelItemClassName + '-' + ClassNameSuffix.inactive;
+            var labelItemDisabledClassName = labelItemClassName + '-' + ClassNameSuffix.disabled;
+            var labelItemHiddenClassName = labelItemClassName + '-' + ClassNameSuffix.hidden;
+            var tabberId = tabContext.tabberId;
+            return React__default.createElement("div", { className: labelContainerAllClassName, role: "tablist" }, entries.map(function (entry, index) {
+                var labelProps = entry.labelProps, key = entry.key, disabled = entry.disabled, hidden = entry.hidden;
+                var pos = { index: index, key: key };
+                var labelDelayTriggerCancelProps;
+                var labelDelayTriggerProps;
+                var labelTriggerProps;
+                if (!disabled && !hidden) {
+                    var doSwitch_1 = function () {
+                        clearTimeout(tabContext.delayTimeout);
+                        fnSwitchTo(pos);
                     };
-                var cancelDelayDoSwitch = function () {
-                    if (localDelayTimeout_1 === context.delayTimeout) {
-                        clearTimeout(localDelayTimeout_1);
+                    var localDelayTimeout_1;
+                    var delayDoSwitch = (delayTriggerLatency) <= 0 ?
+                        doSwitch_1 :
+                        function () {
+                            clearTimeout(tabContext.delayTimeout);
+                            localDelayTimeout_1 = tabContext.delayTimeout = setTimeout(doSwitch_1, delayTriggerLatency);
+                        };
+                    var cancelDelayDoSwitch = function () {
+                        if (localDelayTimeout_1 === tabContext.delayTimeout) {
+                            clearTimeout(localDelayTimeout_1);
+                        }
+                    };
+                    if (delayTriggerEvents.length) {
+                        labelDelayTriggerCancelProps = createEventHandler(delayTriggerCancelEvents, cancelDelayDoSwitch);
+                        labelDelayTriggerProps = createEventHandler(delayTriggerEvents, delayDoSwitch);
                     }
-                };
-                if (delayTriggerEvents && delayTriggerEvents.length) {
-                    labelDelayTriggerCancelProps = createEventHandler(delayTriggerCancelEvents, cancelDelayDoSwitch);
-                    labelDelayTriggerProps = createEventHandler(delayTriggerEvents, delayDoSwitch);
+                    labelTriggerProps = createEventHandler(triggerEvents, doSwitch_1);
                 }
-                labelTriggerProps = createEventHandler(triggerEvents, doSwitch_1);
-            }
-            var isActive = index === currentIndex;
-            var labelItemStatusClassName = isActive ? labelItemActiveClassName : labelItemInactiveClassName;
-            var labelItemAllClassName = labelItemClassName + ' ' + labelItemStatusClassName;
-            if (disabled) {
-                labelItemAllClassName += ' ' + labelItemDisabledClassName;
-            }
-            if (hidden) {
-                labelItemAllClassName += ' ' + labelItemHiddenClassName;
-            }
-            return React__default.createElement("label", __assign$2({}, labelProps, labelDelayTriggerCancelProps, labelDelayTriggerProps, labelTriggerProps, { className: labelItemAllClassName, tabIndex: 0, id: getLabelItemId(tabberId, side, index), role: "tab", "aria-controls": getPanelItemId(tabberId, index), "aria-selected": isActive, "aria-expanded": isActive, key: key ? 'key-' + key : 'index-' + index, onKeyDown: keyboardSwitch ? function (e) { return onKeyDown(e, pos); } : undefined }), entry.label);
-        }));
-        return labelContainer;
-    }
+                var isActive = index === currentIndex;
+                var labelItemStatusClassName = isActive ? labelItemActiveClassName : labelItemInactiveClassName;
+                var labelItemAllClassName = labelItemClassName + ' ' + labelItemStatusClassName;
+                if (disabled) {
+                    labelItemAllClassName += ' ' + labelItemDisabledClassName;
+                }
+                if (hidden) {
+                    labelItemAllClassName += ' ' + labelItemHiddenClassName;
+                }
+                return React__default.createElement("label", __assign$2({}, labelProps, labelDelayTriggerCancelProps, labelDelayTriggerProps, labelTriggerProps, { className: labelItemAllClassName, tabIndex: 0, id: getLabelItemId(tabberId, side, index), role: "tab", "aria-controls": getPanelItemId(tabberId, index), "aria-selected": isActive, "aria-expanded": isActive, key: key ? 'key-' + key : 'index-' + index, onKeyDown: keyboardSwitch ? function (e) { return _this.onKeyDown(e, pos); } : undefined }), entry.label);
+            }));
+        };
+        LabelContainer.propTypes = labelContainerPropTypes;
+        return LabelContainer;
+    }(React.Component));
 
+    var __extends$3 = (undefined && undefined.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
     var __assign$3 = (undefined && undefined.__assign) || function () {
         __assign$3 = Object.assign || function(t) {
             for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -408,44 +474,51 @@
         };
         return __assign$3.apply(this, arguments);
     };
-    function createPanelContainer(props, context, entries, refLabelSide) {
-        var mode = props.mode, panelContainerClassName = props.panelContainerClassName, panelItemClassName = props.panelItemClassName;
-        var tabberId = context.tabberId, currentIndex = context.currentPosition.index;
-        var panelContainerModeClassName = panelContainerClassName + '-' + mode;
-        var panelItemActiveClassName = panelItemClassName + '-' + classNameSuffix.active;
-        var panelItemInactiveClassName = panelItemClassName + '-' + classNameSuffix.inactive;
-        var panelItemDisabledClassName = panelItemClassName + '-' + classNameSuffix.disabled;
-        var panelItemHiddenClassName = panelItemClassName + '-' + classNameSuffix.hidden;
-        return React__default.createElement("div", { className: panelContainerClassName + ' ' + panelContainerModeClassName }, entries.map(function (entry, index) {
-            var panelProps = entry.panelProps, key = entry.key, disabled = entry.disabled, hidden = entry.hidden;
-            var isActive = index === currentIndex;
-            var panelItemStatusClassName = isActive ? panelItemActiveClassName : panelItemInactiveClassName;
-            var panelItemAllClassName = panelItemClassName + ' ' + panelItemStatusClassName;
-            if (disabled) {
-                panelItemAllClassName += ' ' + panelItemDisabledClassName;
-            }
-            if (hidden) {
-                panelItemAllClassName += ' ' + panelItemHiddenClassName;
-            }
-            return React__default.createElement("div", __assign$3({}, panelProps, { className: panelItemAllClassName, id: getPanelItemId(tabberId, index), role: "tabpanel", "aria-labelledby": getLabelItemId(tabberId, refLabelSide, index), "aria-hidden": !isActive, key: key ? 'key-' + key : 'index-' + index }), entry.panel);
-        }));
-    }
+    var PanelContainer = /** @class */ (function (_super) {
+        __extends$3(PanelContainer, _super);
+        function PanelContainer() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        PanelContainer.prototype.render = function () {
+            var _a = this.props, entries = _a.entries, mode = _a.mode, panelContainerClassName = _a.panelContainerClassName, panelItemClassName = _a.panelItemClassName, tabContext = _a.tabContext, currentIndex = _a.currentIndex, refLabelSide = _a.refLabelSide;
+            var panelContainerModeClassName = panelContainerClassName + '-' + mode;
+            var panelContainerAllClassName = panelContainerClassName + ' ' + panelContainerModeClassName;
+            var panelItemActiveClassName = panelItemClassName + '-' + ClassNameSuffix.active;
+            var panelItemInactiveClassName = panelItemClassName + '-' + ClassNameSuffix.inactive;
+            var panelItemDisabledClassName = panelItemClassName + '-' + ClassNameSuffix.disabled;
+            var panelItemHiddenClassName = panelItemClassName + '-' + ClassNameSuffix.hidden;
+            var tabberId = tabContext.tabberId;
+            return React__default.createElement("div", { className: panelContainerAllClassName }, entries.map(function (entry, index) {
+                var panelProps = entry.panelProps, key = entry.key, disabled = entry.disabled, hidden = entry.hidden;
+                var isActive = index === currentIndex;
+                var panelItemStatusClassName = isActive ? panelItemActiveClassName : panelItemInactiveClassName;
+                var panelItemAllClassName = panelItemClassName + ' ' + panelItemStatusClassName;
+                if (disabled) {
+                    panelItemAllClassName += ' ' + panelItemDisabledClassName;
+                }
+                if (hidden) {
+                    panelItemAllClassName += ' ' + panelItemHiddenClassName;
+                }
+                return React__default.createElement("div", __assign$3({}, panelProps, { className: panelItemAllClassName, id: getPanelItemId(tabberId, index), role: "tabpanel", "aria-labelledby": getLabelItemId(tabberId, refLabelSide, index), "aria-hidden": !isActive, key: key ? 'key-' + key : 'index-' + index }), entry.panel);
+            }));
+        };
+        PanelContainer.propTypes = panelContainerPropTypes;
+        return PanelContainer;
+    }(React.Component));
 
-    function createTabContainer(props, context, entries, fnSwitchTo, fnSwitchPrevious, fnSwitchNext, fnSwitchFirst, fnSwitchLast) {
-        var mode = props.mode, tabContainerClassName = props.tabContainerClassName, showHeaderLabelContainer = props.showHeaderLabelContainer, showFooterLabelContainer = props.showFooterLabelContainer;
-        var header = classNameSuffix.header, footer = classNameSuffix.footer;
+    function TabContainer(props) {
+        var entries = props.entries, mode = props.mode, keyboardSwitch = props.keyboardSwitch, delayTriggerLatency = props.delayTriggerLatency, tabContainerClassName = props.tabContainerClassName, labelContainerClassName = props.labelContainerClassName, labelItemClassName = props.labelItemClassName, panelContainerClassName = props.panelContainerClassName, panelItemClassName = props.panelItemClassName, showHeaderLabelContainer = props.showHeaderLabelContainer, showFooterLabelContainer = props.showFooterLabelContainer, triggerEvents = props.triggerEvents, delayTriggerEvents = props.delayTriggerEvents, delayTriggerCancelEvents = props.delayTriggerCancelEvents, fnSwitchTo = props.fnSwitchTo, fnSwitchPrevious = props.fnSwitchPrevious, fnSwitchNext = props.fnSwitchNext, fnSwitchFirst = props.fnSwitchFirst, fnSwitchLast = props.fnSwitchLast, tabContext = props.tabContext, currentIndex = props.currentIndex;
         var tabContainerModeClassName = tabContainerClassName + '-' + mode;
         return React__default.createElement("div", { className: tabContainerClassName + ' ' + tabContainerModeClassName },
             showHeaderLabelContainer ?
-                createLabelContainer(props, context, entries, header, fnSwitchTo, fnSwitchPrevious, fnSwitchNext, fnSwitchFirst, fnSwitchLast) :
-                null,
-            createPanelContainer(props, context, entries, showHeaderLabelContainer || !showFooterLabelContainer ? header : footer),
+                React__default.createElement(LabelContainer, { entries: entries, mode: mode, keyboardSwitch: keyboardSwitch, delayTriggerLatency: delayTriggerLatency, labelContainerClassName: labelContainerClassName, labelItemClassName: labelItemClassName, tabContext: tabContext, currentIndex: currentIndex, side: ClassNameSuffix.header, triggerEvents: triggerEvents, delayTriggerEvents: delayTriggerEvents, delayTriggerCancelEvents: delayTriggerCancelEvents, fnSwitchTo: fnSwitchTo, fnSwitchPrevious: fnSwitchPrevious, fnSwitchNext: fnSwitchNext, fnSwitchFirst: fnSwitchFirst, fnSwitchLast: fnSwitchLast }) : null,
+            React__default.createElement(PanelContainer, { mode: mode, panelContainerClassName: panelContainerClassName, panelItemClassName: panelItemClassName, tabContext: tabContext, currentIndex: currentIndex, entries: entries, refLabelSide: showHeaderLabelContainer || !showFooterLabelContainer ? ClassNameSuffix.header : ClassNameSuffix.footer }),
             showFooterLabelContainer ?
-                createLabelContainer(props, context, entries, footer, fnSwitchTo, fnSwitchPrevious, fnSwitchNext, fnSwitchFirst, fnSwitchLast)
-                : null);
+                React__default.createElement(LabelContainer, { entries: entries, mode: mode, keyboardSwitch: keyboardSwitch, delayTriggerLatency: delayTriggerLatency, labelContainerClassName: labelContainerClassName, labelItemClassName: labelItemClassName, tabContext: tabContext, currentIndex: currentIndex, side: ClassNameSuffix.footer, triggerEvents: triggerEvents, delayTriggerEvents: delayTriggerEvents, delayTriggerCancelEvents: delayTriggerCancelEvents, fnSwitchTo: fnSwitchTo, fnSwitchPrevious: fnSwitchPrevious, fnSwitchNext: fnSwitchNext, fnSwitchFirst: fnSwitchFirst, fnSwitchLast: fnSwitchLast }) : null);
     }
+    TabContainer.propTypes = tabContainerPropTypes;
 
-    var __extends$2 = (undefined && undefined.__extends) || (function () {
+    var __extends$4 = (undefined && undefined.__extends) || (function () {
         var extendStatics = function (d, b) {
             extendStatics = Object.setPrototypeOf ||
                 ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -464,15 +537,15 @@
         SwitchDirection[SwitchDirection["Forward"] = 1] = "Forward";
     })(SwitchDirection || (SwitchDirection = {}));
     var Tab = /** @class */ (function (_super) {
-        __extends$2(Tab, _super);
+        __extends$4(Tab, _super);
         function Tab(props) {
             var _this = _super.call(this, props) || this;
             _this.tabContext = {
                 tabberId: getNextTabContainerId(),
-                prevPosition: invalidNormalizedPosition,
-                currentPosition: invalidNormalizedPosition,
                 delayTimeout: 0
             };
+            _this.prevPosition = invalidNormalizedPosition;
+            _this.currentPosition = invalidNormalizedPosition;
             _this.switchTo = _this.switchTo.bind(_this);
             _this._switchNeighbor = _this._switchNeighbor.bind(_this);
             _this.switchPrevious = _this.switchPrevious.bind(_this);
@@ -480,20 +553,22 @@
             _this.switchFirst = _this.switchFirst.bind(_this);
             _this.switchLast = _this.switchLast.bind(_this);
             _this.state = {
-                manageActiveIndex: true,
+                manageTargetPosition: true,
                 targetPosition: -1,
             };
             return _this;
         }
         Tab.getDerivedStateFromProps = function (props) {
             var activePosition = props.activePosition;
-            if (activePosition === undefined || activePosition === null || (typeof activePosition === 'number' && !isFinite(activePosition))) {
+            if (activePosition === undefined ||
+                activePosition === null ||
+                (typeof activePosition === 'number' && !isFinite(activePosition))) {
                 return {
-                    manageActiveIndex: true
+                    manageTargetPosition: true
                 };
             }
             return {
-                manageActiveIndex: false,
+                manageTargetPosition: false,
                 targetPosition: activePosition
             };
         };
@@ -501,12 +576,14 @@
             clearTimeout(this.tabContext.delayTimeout);
         };
         Tab.prototype.switchTo = function (position) {
-            var manageActiveIndex = this.state.manageActiveIndex;
-            var onUpdateActivePosition = this.props.onUpdateActivePosition;
-            if (manageActiveIndex) {
-                this.setState({
-                    targetPosition: position.index
-                });
+            var manageTargetPosition = this.state.manageTargetPosition;
+            var _a = this.props, onUpdateActivePosition = _a.onUpdateActivePosition, onUpdateTargetPosition = _a.onUpdateTargetPosition;
+            if (manageTargetPosition) {
+                if (!onUpdateTargetPosition || onUpdateTargetPosition(position) !== false) {
+                    this.setState({
+                        targetPosition: position.index
+                    });
+                }
             }
             else if (onUpdateActivePosition) {
                 onUpdateActivePosition(position);
@@ -521,8 +598,8 @@
                 loop = options.loop;
                 exclude = options.exclude;
             }
-            var entries = this.props.tabs;
-            var excludeIndecies = exclude ? exclude.map(function (pos) { return getNormalizedPosition(entries, pos).index; }) : [];
+            var entries = this.props.entries;
+            var excludeIndecies = exclude ? exclude.map(function (pos) { return normalizePosition(entries, pos).index; }) : [];
             var itemCount = entries.length;
             var maxIterationCount = -1;
             if (loop) {
@@ -550,57 +627,55 @@
                     (includeDisabled && !hidden) ||
                     (!disabled && includeHidden) ||
                     (includeDisabled && includeHidden)) {
-                    return this.switchTo(getNormalizedPosition(entries, tabItemIndex));
+                    return this.switchTo(normalizePosition(entries, tabItemIndex));
                 }
             }
         };
         Tab.prototype.switchPrevious = function (options) {
-            return this._switchNeighbor(this.tabContext.currentPosition.index, SwitchDirection.Backward, options);
+            return this._switchNeighbor(this.currentPosition.index, SwitchDirection.Backward, options);
         };
         Tab.prototype.switchNext = function (options) {
-            return this._switchNeighbor(this.tabContext.currentPosition.index, SwitchDirection.Forward, options);
+            return this._switchNeighbor(this.currentPosition.index, SwitchDirection.Forward, options);
         };
         Tab.prototype.switchFirst = function (options) {
             return this._switchNeighbor(-1, SwitchDirection.Forward, options);
         };
         Tab.prototype.switchLast = function (options) {
-            return this._switchNeighbor(this.props.tabs.length, SwitchDirection.Backward, options);
+            return this._switchNeighbor(this.props.entries.length, SwitchDirection.Backward, options);
         };
         Tab.prototype.render = function () {
-            var _a = this, props = _a.props, state = _a.state, tabContext = _a.tabContext;
-            var targetPosition = state.targetPosition;
-            var normalizedPrevPosition = tabContext.prevPosition;
+            var _a = this, props = _a.props, state = _a.state, tabContext = _a.tabContext, normalizedPrevPosition = _a.prevPosition;
+            var entries = props.entries, mode = props.mode, keyboardSwitch = props.keyboardSwitch, delayTriggerLatency = props.delayTriggerLatency, tabContainerClassName = props.tabContainerClassName, labelContainerClassName = props.labelContainerClassName, labelItemClassName = props.labelItemClassName, panelContainerClassName = props.panelContainerClassName, panelItemClassName = props.panelItemClassName, showHeaderLabelContainer = props.showHeaderLabelContainer, showFooterLabelContainer = props.showFooterLabelContainer, triggerEvents = props.triggerEvents, delayTriggerEvents = props.delayTriggerEvents, delayTriggerCancelEvents = props.delayTriggerCancelEvents;
             var prevIndex = normalizedPrevPosition.index;
-            var tabs = props.tabs;
-            var normalizedTargetPosition = getNormalizedPosition(tabs, targetPosition);
+            var targetPosition = state.targetPosition;
+            var normalizedTargetPosition = normalizePosition(entries, targetPosition);
             var targetIndex = normalizedTargetPosition.index;
-            var entryCount = tabs.length;
+            var entryCount = entries.length;
             var currentIndex;
             if (targetIndex === -1) {
                 currentIndex = entryCount > 0 ? 0 : -1;
-                tabContext.currentPosition = getNormalizedPosition(tabs, currentIndex);
+                this.currentPosition = normalizePosition(entries, currentIndex);
             }
             else if (targetIndex < entryCount) {
                 currentIndex = targetIndex;
-                tabContext.currentPosition = normalizedTargetPosition;
+                this.currentPosition = normalizedTargetPosition;
             }
             else {
                 currentIndex = entryCount - 1;
-                tabContext.currentPosition = getNormalizedPosition(tabs, currentIndex);
+                this.currentPosition = normalizePosition(entries, currentIndex);
             }
             if (prevIndex !== currentIndex && props.onSwitching) {
-                props.onSwitching(normalizedPrevPosition, tabContext.currentPosition);
+                props.onSwitching(normalizedPrevPosition, this.currentPosition);
             }
-            return createTabContainer(props, tabContext, tabs, this.switchTo, this.switchPrevious, this.switchNext, this.switchFirst, this.switchLast);
+            return React__default.createElement(TabContainer, { entries: entries, mode: mode, keyboardSwitch: keyboardSwitch, delayTriggerLatency: delayTriggerLatency, tabContainerClassName: tabContainerClassName, labelContainerClassName: labelContainerClassName, labelItemClassName: labelItemClassName, panelContainerClassName: panelContainerClassName, panelItemClassName: panelItemClassName, showHeaderLabelContainer: showHeaderLabelContainer, showFooterLabelContainer: showFooterLabelContainer, triggerEvents: triggerEvents, delayTriggerEvents: delayTriggerEvents, delayTriggerCancelEvents: delayTriggerCancelEvents, fnSwitchTo: this.switchTo, fnSwitchPrevious: this.switchPrevious, fnSwitchNext: this.switchNext, fnSwitchFirst: this.switchFirst, fnSwitchLast: this.switchLast, tabContext: tabContext, currentIndex: currentIndex });
         };
         Tab.prototype.handleIndexChange = function () {
-            var _a = this, props = _a.props, tabContext = _a.tabContext;
+            var _a = this, props = _a.props, prevPosition = _a.prevPosition, currentPosition = _a.currentPosition;
             var onSwitched = props.onSwitched;
-            var prevPosition = tabContext.prevPosition, currentPosition = tabContext.currentPosition;
             if (prevPosition.index !== currentPosition.index && onSwitched) {
                 onSwitched(prevPosition, currentPosition);
             }
-            tabContext.prevPosition = currentPosition;
+            this.prevPosition = currentPosition;
         };
         Tab.prototype.componentDidMount = function () {
             this.handleIndexChange();
@@ -613,8 +688,7 @@
         return Tab;
     }(React__default.Component));
 
-    /// <reference path='./type/public.d.ts' />
-    var __extends$3 = (undefined && undefined.__extends) || (function () {
+    var __extends$5 = (undefined && undefined.__extends) || (function () {
         var extendStatics = function (d, b) {
             extendStatics = Object.setPrototypeOf ||
                 ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -648,21 +722,20 @@
         return t;
     };
     var ReactTabber = /** @class */ (function (_super) {
-        __extends$3(ReactTabber, _super);
+        __extends$5(ReactTabber, _super);
         function ReactTabber() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
         ReactTabber.prototype.render = function () {
-            var _a = this.props, tabs = _a.tabs, children = _a.children, triggerEvents = _a.triggerEvents, delayTriggerEvents = _a.delayTriggerEvents, delayTriggerCancelEvents = _a.delayTriggerCancelEvents, props = __rest$1(_a, ["tabs", "children", "triggerEvents", "delayTriggerEvents", "delayTriggerCancelEvents"]);
-            var allTabs = parseTabEntries(tabs, children);
-            return React__default.createElement(Tab, __assign$4({}, props, { triggerEvents: normalizeEvents(triggerEvents), delayTriggerEvents: normalizeEvents(delayTriggerEvents), delayTriggerCancelEvents: normalizeEvents(delayTriggerCancelEvents), tabs: allTabs }));
+            var _a = this.props, entries = _a.entries, children = _a.children, triggerEvents = _a.triggerEvents, delayTriggerEvents = _a.delayTriggerEvents, delayTriggerCancelEvents = _a.delayTriggerCancelEvents, props = __rest$1(_a, ["entries", "children", "triggerEvents", "delayTriggerEvents", "delayTriggerCancelEvents"]);
+            return React__default.createElement(Tab, __assign$4({}, props, { entries: parseTabEntries(entries, children), triggerEvents: normalizeEvents(triggerEvents), delayTriggerEvents: normalizeEvents(delayTriggerEvents), delayTriggerCancelEvents: normalizeEvents(delayTriggerCancelEvents) }));
         };
         ReactTabber.Label = Label;
         ReactTabber.Panel = Panel;
-        ReactTabber.propTypes = propTypes;
+        ReactTabber.propTypes = publicPropTypes;
         ReactTabber.defaultProps = defaultProps;
         return ReactTabber;
-    }(React__default.Component));
+    }(React.Component));
 
     return ReactTabber;
 
